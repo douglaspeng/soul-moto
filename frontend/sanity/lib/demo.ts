@@ -2,7 +2,7 @@
  * Demo data used as placeholders and initial values for the blog
  */
 
-export const title = 'Sanity + Next.js'
+export const title = 'Moto Soul Crew'
 
 export const description = [
   {
