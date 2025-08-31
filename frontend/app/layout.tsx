@@ -7,9 +7,11 @@ import {draftMode} from 'next/headers'
 import {VisualEditing, toPlainText} from 'next-sanity'
 import {Toaster} from 'sonner'
 
+import ComingSoon from '@/app/components/ComingSoon'
 import DraftModeToast from '@/app/components/DraftModeToast'
 import Footer from '@/app/components/Footer'
 import Header from '@/app/components/Header'
+import {config} from '@/app/config'
 import * as demo from '@/sanity/lib/demo'
 import {sanityFetch, SanityLive} from '@/sanity/lib/live'
 import {settingsQuery} from '@/sanity/lib/queries'
@@ -60,6 +62,19 @@ const inter = Inter({
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const {isEnabled: isDraftMode} = await draftMode()
 
+  // If coming soon flag is enabled, show coming soon page
+  if (config.show_coming_soon) {
+    return (
+      <html lang="en" className={`${inter.variable} bg-white text-black`}>
+        <body>
+          <ComingSoon />
+          <SpeedInsights />
+        </body>
+      </html>
+    )
+  }
+
+  // Otherwise show normal page
   return (
     <html lang="en" className={`${inter.variable} bg-white text-black`}>
       <body>
