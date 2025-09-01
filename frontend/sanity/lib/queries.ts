@@ -95,3 +95,13 @@ export const pagesSlugs = defineQuery(`
   *[_type == "page" && defined(slug.current)]
   {"slug": slug.current}
 `)
+
+export const personsQuery = defineQuery(`
+  *[_type == "person"] {
+    _id,
+    name,
+    description,
+    picture,
+    "imageUrl": picture.asset->url
+  }
+`)
