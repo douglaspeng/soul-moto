@@ -176,7 +176,7 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
                       )}
                       
                                             {/* Hover overlay */}
-                      <div className="absolute inset-0  bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-end pointer-events-none">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/0 via-black/0 to-black/0 group-hover:from-black/60 group-hover:via-black/40 group-hover:to-black/20 transition-all duration-300 flex items-end pointer-events-none">
                         <div className="w-full p-4 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                           {item.name && (
                             <h3 className="text-lg font-semibold mb-1 drop-shadow-lg">{item.name}</h3>

@@ -17,7 +17,7 @@ export default async function AboutUs() {
             About Us
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Meet the passionate team behind Soul Moto. We're dedicated to creating an amazing 
+            Meet the passionate team behind Soul Moto. We&apos;re dedicated to creating an amazing 
             motorcycle community and sharing our love for the open road.
           </p>
         </div>
