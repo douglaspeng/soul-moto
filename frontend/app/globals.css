@@ -33,3 +33,34 @@
 
   --default-transition-duration: 250ms;
 }
+
+/* Gallery masonry styles */
+.gallery-grid {
+  position: relative;
+}
+
+.gallery-item {
+  transition: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.gallery-item.portrait {
+  height: auto;
+}
+
+.gallery-item.landscape {
+  height: auto;
+}
+
+.gallery-item.square {
+  height: auto;
+}
+
+/* Shuffle.js animations */
+.shuffle-item {
+  transition: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.shuffle-item.hidden {
+  opacity: 0;
+  transform: scale(0.8);
+}

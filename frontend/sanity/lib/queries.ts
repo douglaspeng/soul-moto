@@ -105,3 +105,13 @@ export const personsQuery = defineQuery(`
     "imageUrl": picture.asset->url
   }
 `)
+
+export const galleryQuery = defineQuery(`
+  *[_type == "gallery"] | order(_createdAt desc) {
+    _id,
+    name,
+    description,
+    image,
+    "imageUrl": image.asset->url
+  }
+`)
