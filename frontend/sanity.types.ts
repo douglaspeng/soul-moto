@@ -829,6 +829,9 @@ export type PersonsQueryResult = Array<{
 // Variable: galleryQuery
 // Query: *[_type == "gallery"] | order(_createdAt desc) {    _id,    name,    description,    image,    "imageUrl": image.asset->url  }
 export type GalleryQueryResult = Array<never>
+// Variable: eventsQuery
+// Query: *[_type == "event"] | order(date asc, time asc) {    _id,    eventName,    description,    detail,    date,    time,    category,    eventImage,    "imageUrl": eventImage.asset->url  }
+export type EventsQueryResult = Array<never>
 
 // Query TypeMap
 import '@sanity/client'
@@ -844,5 +847,6 @@ declare module '@sanity/client' {
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult
     '\n  *[_type == "person"] {\n    _id,\n    name,\n    description,\n    picture,\n    "imageUrl": picture.asset->url\n  }\n': PersonsQueryResult
     '\n  *[_type == "gallery"] | order(_createdAt desc) {\n    _id,\n    name,\n    description,\n    image,\n    "imageUrl": image.asset->url\n  }\n': GalleryQueryResult
+    '\n  *[_type == "event"] | order(date asc, time asc) {\n    _id,\n    eventName,\n    description,\n    detail,\n    date,\n    time,\n    category,\n    eventImage,\n    "imageUrl": eventImage.asset->url\n  }\n': EventsQueryResult
   }
 }

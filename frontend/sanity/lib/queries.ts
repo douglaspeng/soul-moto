@@ -115,3 +115,17 @@ export const galleryQuery = defineQuery(`
     "imageUrl": image.asset->url
   }
 `)
+
+export const eventsQuery = defineQuery(`
+  *[_type == "event"] | order(date asc, time asc) {
+    _id,
+    eventName,
+    description,
+    detail,
+    date,
+    time,
+    category,
+    eventImage,
+    "imageUrl": eventImage.asset->url
+  }
+`)
