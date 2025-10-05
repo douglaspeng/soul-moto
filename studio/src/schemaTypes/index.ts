@@ -3,6 +3,7 @@ import {page} from './documents/page'
 import {post} from './documents/post'
 import {gallery} from './documents/gallery'
 import {event} from './documents/event'
+import {service} from './documents/service'
 import {callToAction} from './objects/callToAction'
 import {infoSection} from './objects/infoSection'
 import {settings} from './singletons/settings'
@@ -20,6 +21,7 @@ export const schemaTypes = [
   person,
   gallery,
   event,
+  service,
   // Objects
   blockContent,
   infoSection,

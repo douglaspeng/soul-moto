@@ -129,3 +129,45 @@ export const eventsQuery = defineQuery(`
     "imageUrl": eventImage.asset->url
   }
 `)
+
+export const eventQuery = defineQuery(`
+  *[_type == "event" && _id == $id][0] {
+    _id,
+    eventName,
+    description,
+    detail,
+    date,
+    time,
+    category,
+    eventImage,
+    "imageUrl": eventImage.asset->url
+  }
+`)
+
+export const servicesQuery = defineQuery(`
+  *[_type == "service" && isActive == true] | order(_createdAt desc) {
+    _id,
+    title,
+    description,
+    detailedDescription,
+    price,
+    category,
+    serviceImage,
+    "imageUrl": serviceImage.asset->url,
+    isActive
+  }
+`)
+
+export const serviceQuery = defineQuery(`
+  *[_type == "service" && _id == $id][0] {
+    _id,
+    title,
+    description,
+    detailedDescription,
+    price,
+    category,
+    serviceImage,
+    "imageUrl": serviceImage.asset->url,
+    isActive
+  }
+`)

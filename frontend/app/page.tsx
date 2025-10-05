@@ -27,12 +27,12 @@ export default async function Page() {
                 <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-black">
                   Soul Moto Crew
                 </h1>
+                <SideBySideIcons />
               </div>
             </div>
           </div>
         </div>
         <div className=" flex flex-col items-center">
-          <SideBySideIcons />
           <div className="container relative mx-auto max-w-2xl pb-20 pt-10 space-y-6 lg:max-w-4xl lg:px-12 flex flex-col items-center">
             <div className="prose sm:prose-lg md:prose-xl xl:prose-2xl text-gray-700 prose-a:text-gray-700 font-light text-center">
               {settings?.description && <PortableText value={settings.description} />}
