@@ -9,7 +9,7 @@ interface ScrollContextType {
 const ScrollContext = createContext<ScrollContextType | undefined>(undefined)
 
 export function ScrollProvider({ children }: { children: ReactNode }) {
-  const aboutUsRef = useRef<HTMLDivElement>(null)
+  const aboutUsRef = useRef<HTMLDivElement | null>(null)
 
   return (
     <ScrollContext.Provider value={{ aboutUsRef }}>

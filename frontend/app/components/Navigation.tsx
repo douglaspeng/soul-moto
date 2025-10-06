@@ -62,7 +62,7 @@ export default function Navigation() {
 
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [pathname, aboutUsRef])
+  }, [pathname])
 
   // Reset About Us active state when navigating to other pages
   useEffect(() => {

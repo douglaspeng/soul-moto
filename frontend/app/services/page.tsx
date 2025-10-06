@@ -2,10 +2,22 @@ import {servicesQuery} from '@/sanity/lib/queries'
 import {sanityFetch} from '@/sanity/lib/live'
 import Image from 'next/image'
 
+interface Service {
+  _id: string
+  title: string
+  description: string
+  detailedDescription?: any
+  price?: string
+  category?: string
+  serviceImage?: any
+  imageUrl?: string
+  isActive: boolean
+}
+
 export default async function ServicesPage() {
   const {data: services} = await sanityFetch({
     query: servicesQuery,
-  })
+  }) as {data: Service[]}
 
   return (
     <div className="min-h-screen pt-24">
