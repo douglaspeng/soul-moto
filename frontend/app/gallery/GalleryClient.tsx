@@ -21,7 +21,17 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
   const [galleryItems] = useState<GalleryItem[]>(initialItems)
   const [filter, setFilter] = useState('all')
   const [shuffleInstance, setShuffleInstance] = useState<Shuffle | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const gridRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    // Simulate loading time for images
+    const loadingTimer = setTimeout(() => {
+      setIsLoading(false)
+    }, 2000)
+
+    return () => clearTimeout(loadingTimer)
+  }, [])
 
   useEffect(() => {
     if (galleryItems.length > 0 && gridRef.current) {
@@ -44,7 +54,7 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
         }
       }
     }
-  }, [galleryItems])
+  }, [galleryItems, isLoading])
 
   useEffect(() => {
     if (shuffleInstance) {
@@ -144,7 +154,40 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
       {/* Gallery Grid */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          {galleryItems && galleryItems.length > 0 ? (
+          {isLoading ? (
+            <div ref={gridRef} className="gallery-grid">
+              {/* Sizer element for Shuffle.js */}
+              <div className="gallery-sizer w-full sm:w-1/2 lg:w-1/3 xl:w-1/4"></div>
+              
+              {/* Shimmer placeholders with random aspect ratios */}
+              {Array.from({length: 12}).map((_, index) => {
+                // Random aspect ratio for variety (square, portrait, landscape)
+                const aspectRatios = ['aspect-square', 'aspect-[3/4]', 'aspect-[4/3]', 'aspect-[3/2]', 'aspect-[2/3]']
+                const randomAspect = aspectRatios[index % aspectRatios.length]
+                
+                return (
+                  <div
+                    key={`shimmer-${index}`}
+                    className={`gallery-item w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 mb-6 group cursor-pointer`}
+                    data-groups={['all', 'events', 'rides', 'community'].join(' ')}
+                  >
+                    <div className="relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 mx-3">
+                      <div className={`relative ${randomAspect}`}>
+                        <div 
+                          className="w-full h-full bg-gray-200 animate-pulse"
+                          style={{
+                            background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                            backgroundSize: '200% 100%',
+                            animation: 'shimmer 2s infinite'
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          ) : galleryItems && galleryItems.length > 0 ? (
             <div ref={gridRef} className="gallery-grid">
               {/* Sizer element for Shuffle.js */}
               <div className="gallery-sizer w-full sm:w-1/2 lg:w-1/3 xl:w-1/4"></div>
@@ -221,6 +264,18 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
           </button>
         </div>
       </section>
+      
+      {/* Shimmer Animation Styles */}
+      <style jsx>{`
+        @keyframes shimmer {
+          0% {
+            background-position: -200% 0;
+          }
+          100% {
+            background-position: 200% 0;
+          }
+        }
+      `}</style>
     </div>
   )
 }

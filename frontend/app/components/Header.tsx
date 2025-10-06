@@ -1,6 +1,6 @@
-import Link from 'next/link'
 import {settingsQuery} from '@/sanity/lib/queries'
 import {sanityFetch} from '@/sanity/lib/live'
+import Navigation from './Navigation'
 
 export default async function Header() {
   const {data: settings} = await sanityFetch({
@@ -17,51 +17,7 @@ export default async function Header() {
             </span>
           </Link> */}
 
-          <nav>
-            <ul
-              role="list"
-              className="flex items-center gap-4 md:gap-6 leading-5 text-xs sm:text-base tracking-tight font-mono"
-            >
-              <li>
-                <Link href="/" className="hover:underline">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/rider-blog" className="hover:underline">
-                  Rider Blog
-                </Link>
-              </li>
-              <li>
-                <Link href="/events" className="hover:underline">
-                  Events
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="hover:underline">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/gallery" className="hover:underline">
-                  Gallery
-                </Link>
-              </li>
-              <li>
-                <Link href="/services" className="hover:underline">
-                  Services
-                </Link>
-              </li>
-              <li className="sm:before:w-[1px] sm:before:bg-gray-200 before:block flex sm:gap-4 md:gap-6">
-                <Link
-                  className="rounded-full flex gap-4 items-center bg-black hover:bg-blue focus:bg-blue py-2 px-4 justify-center sm:py-3 sm:px-6 text-white transition-colors duration-200"
-                  href="/join-us"
-                >
-                  <span className="whitespace-nowrap">Join us</span>
-                </Link>
-              </li>
-            </ul>
-          </nav>
+          <Navigation />
         </div>
       </div>
     </header>
