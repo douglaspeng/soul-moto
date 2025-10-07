@@ -11,6 +11,7 @@ import ComingSoon from '@/app/components/ComingSoon'
 import DraftModeToast from '@/app/components/DraftModeToast'
 import Footer from '@/app/components/Footer'
 import Header from '@/app/components/Header'
+import {ScrollProvider} from '@/app/components/ScrollContext'
 import {config} from '@/app/config'
 import * as demo from '@/sanity/lib/demo'
 import {sanityFetch, SanityLive} from '@/sanity/lib/live'
@@ -90,9 +91,11 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           )}
           {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered. */}
           <SanityLive onError={handleError} />
-          <Header />
-          <main className="">{children}</main>
-          <Footer />
+          <ScrollProvider>
+            <Header />
+            <main className="">{children}</main>
+            <Footer />
+          </ScrollProvider>
         </section>
         <SpeedInsights />
       </body>

@@ -805,6 +805,42 @@ export type PostPagesSlugsResult = Array<{
 export type PagesSlugsResult = Array<{
   slug: string
 }>
+// Variable: personsQuery
+// Query: *[_type == "person"] {    _id,    name,    description,    picture,    "imageUrl": picture.asset->url  }
+export type PersonsQueryResult = Array<{
+  _id: string
+  name: null
+  description: null
+  picture: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  imageUrl: string | null
+}>
+// Variable: galleryQuery
+// Query: *[_type == "gallery"] | order(_createdAt desc) {    _id,    name,    description,    image,    "imageUrl": image.asset->url  }
+export type GalleryQueryResult = Array<never>
+// Variable: eventsQuery
+// Query: *[_type == "event"] | order(date asc, time asc) {    _id,    eventName,    description,    detail,    date,    time,    category,    eventImage,    "imageUrl": eventImage.asset->url  }
+export type EventsQueryResult = Array<never>
+// Variable: eventQuery
+// Query: *[_type == "event" && _id == $id][0] {    _id,    eventName,    description,    detail,    date,    time,    category,    eventImage,    "imageUrl": eventImage.asset->url  }
+export type EventQueryResult = null
+// Variable: servicesQuery
+// Query: *[_type == "service" && isActive == true] | order(_createdAt desc) {    _id,    title,    description,    detailedDescription,    price,    category,    serviceImage,    "imageUrl": serviceImage.asset->url,    isActive  }
+export type ServicesQueryResult = Array<never>
+// Variable: serviceQuery
+// Query: *[_type == "service" && _id == $id][0] {    _id,    title,    description,    detailedDescription,    price,    category,    serviceImage,    "imageUrl": serviceImage.asset->url,    isActive  }
+export type ServiceQueryResult = null
 
 // Query TypeMap
 import '@sanity/client'
@@ -818,5 +854,11 @@ declare module '@sanity/client' {
     '\n  *[_type == "post" && slug.current == $slug] [0] {\n    content[]{\n    ...,\n    markDefs[]{\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n    }\n  },\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': PostQueryResult
     '\n  *[_type == "post" && defined(slug.current)]\n  {"slug": slug.current}\n': PostPagesSlugsResult
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult
+    '\n  *[_type == "person"] {\n    _id,\n    name,\n    description,\n    picture,\n    "imageUrl": picture.asset->url\n  }\n': PersonsQueryResult
+    '\n  *[_type == "gallery"] | order(_createdAt desc) {\n    _id,\n    name,\n    description,\n    image,\n    "imageUrl": image.asset->url\n  }\n': GalleryQueryResult
+    '\n  *[_type == "event"] | order(date asc, time asc) {\n    _id,\n    eventName,\n    description,\n    detail,\n    date,\n    time,\n    category,\n    eventImage,\n    "imageUrl": eventImage.asset->url\n  }\n': EventsQueryResult
+    '\n  *[_type == "event" && _id == $id][0] {\n    _id,\n    eventName,\n    description,\n    detail,\n    date,\n    time,\n    category,\n    eventImage,\n    "imageUrl": eventImage.asset->url\n  }\n': EventQueryResult
+    '\n  *[_type == "service" && isActive == true] | order(_createdAt desc) {\n    _id,\n    title,\n    description,\n    detailedDescription,\n    price,\n    category,\n    serviceImage,\n    "imageUrl": serviceImage.asset->url,\n    isActive\n  }\n': ServicesQueryResult
+    '\n  *[_type == "service" && _id == $id][0] {\n    _id,\n    title,\n    description,\n    detailedDescription,\n    price,\n    category,\n    serviceImage,\n    "imageUrl": serviceImage.asset->url,\n    isActive\n  }\n': ServiceQueryResult
   }
 }

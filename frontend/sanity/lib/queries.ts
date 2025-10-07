@@ -95,3 +95,79 @@ export const pagesSlugs = defineQuery(`
   *[_type == "page" && defined(slug.current)]
   {"slug": slug.current}
 `)
+
+export const personsQuery = defineQuery(`
+  *[_type == "person"] {
+    _id,
+    name,
+    description,
+    picture,
+    "imageUrl": picture.asset->url
+  }
+`)
+
+export const galleryQuery = defineQuery(`
+  *[_type == "gallery"] | order(_createdAt desc) {
+    _id,
+    name,
+    description,
+    image,
+    "imageUrl": image.asset->url
+  }
+`)
+
+export const eventsQuery = defineQuery(`
+  *[_type == "event"] | order(date asc, time asc) {
+    _id,
+    eventName,
+    description,
+    detail,
+    date,
+    time,
+    category,
+    eventImage,
+    "imageUrl": eventImage.asset->url
+  }
+`)
+
+export const eventQuery = defineQuery(`
+  *[_type == "event" && _id == $id][0] {
+    _id,
+    eventName,
+    description,
+    detail,
+    date,
+    time,
+    category,
+    eventImage,
+    "imageUrl": eventImage.asset->url
+  }
+`)
+
+export const servicesQuery = defineQuery(`
+  *[_type == "service" && isActive == true] | order(_createdAt desc) {
+    _id,
+    title,
+    description,
+    detailedDescription,
+    price,
+    category,
+    serviceImage,
+    "imageUrl": serviceImage.asset->url,
+    isActive
+  }
+`)
+
+export const serviceQuery = defineQuery(`
+  *[_type == "service" && _id == $id][0] {
+    _id,
+    title,
+    description,
+    detailedDescription,
+    price,
+    category,
+    serviceImage,
+    "imageUrl": serviceImage.asset->url,
+    isActive
+  }
+`)
