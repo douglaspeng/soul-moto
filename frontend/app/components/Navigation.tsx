@@ -72,59 +72,59 @@ export default function Navigation() {
   }, [pathname])
 
   return (
-    <nav className="flex items-center">
+    <nav className="flex items-center justify-between w-full navigation-container">
       {/* Logo */}
-      <Link href="/" className="flex items-center">
+      <Link href="/" className="flex items-center navigation-logo">
         <Image
           src="/images/sm-bk-text.svg"
           alt="Soul Moto Crew Logo"
           width={300}
           height={100}
-          style={{ height: '100px', width: '300px' }}
+          className="navigation-logo-image"
         />
       </Link>
       
       {/* Navigation Items */}
       <ul
         role="list"
-        className="flex items-center gap-4 md:gap-6 leading-5 text-xs sm:text-base tracking-tight font-mono"
+        className="flex items-center gap-4 md:gap-6 leading-5 text-xs sm:text-base tracking-tight font-mono navigation-menu"
       >
 
-        <li>
+        <li className="navigation-item">
           <Link 
             href="/events" 
-            className={`hover:underline ${isActive('/events') ? 'text-black font-semibold' : ''}`}
+            className={`hover:underline navigation-link ${isActive('/events') ? 'text-black font-semibold' : ''}`}
           >
             Events
           </Link>
         </li>
         
-        <li>
+        <li className="navigation-item">
           <Link 
             href="/gallery" 
-            className={`hover:underline ${isActive('/gallery') ? 'text-black font-semibold' : ''}`}
+            className={`hover:underline navigation-link ${isActive('/gallery') ? 'text-black font-semibold' : ''}`}
           >
             Gallery
           </Link>
         </li>
-        <li>
+        <li className="navigation-item">
           <Link 
             href="/services" 
-            className={`hover:underline ${isActive('/services') ? 'text-black font-semibold' : ''}`}
+            className={`hover:underline navigation-link ${isActive('/services') ? 'text-black font-semibold' : ''}`}
           >
             Services
           </Link>
         </li>
-        <li>
+        <li className="navigation-item">
           <button 
             onClick={handleAboutUsClick}
-            className={`hover:underline ${isAboutUsActive ? 'text-black font-semibold' : ''}`}
+            className={`hover:underline navigation-link ${isAboutUsActive ? 'text-black font-semibold' : ''}`}
           >
             About Us
           </button>
         </li>
-        <li>
-          <span className="text-gray-400 cursor-not-allowed">
+        <li className="navigation-item">
+          <span className="text-gray-400 cursor-not-allowed navigation-link-disabled">
             Rider Blog <span className="text-xs">(Coming Soon)</span>
           </span>
         </li>
