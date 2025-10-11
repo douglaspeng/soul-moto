@@ -90,10 +90,15 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
   const openModal = (item: GalleryItem) => {
     setSelectedImage(item)
     setIsImageLoading(true)
+    // Prevent body scrolling on mobile
+    document.body.style.overflow = 'hidden'
   }
 
   const closeModal = () => {
     setSelectedImage(null)
+    setIsImageLoading(false)
+    // Restore body scrolling
+    document.body.style.overflow = 'unset'
   }
 
   return (
@@ -272,17 +277,31 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
       {/* Image Modal */}
       {selectedImage && (
         <div 
-          className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all duration-300 ease-out"
+          className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-2 sm:p-4 transition-all duration-300 ease-out"
           style={{
             backgroundColor: '#ffffff52'
           }}
           onClick={closeModal}
+          onTouchEnd={closeModal}
         >
           <div 
-            className="relative max-w-[70vw] max-h-[70vh] flex items-center justify-center transition-all duration-300 ease-out"
+            className="relative w-full h-full max-w-[95vw] max-h-[95vh] sm:max-w-[70vw] sm:max-h-[70vh] flex items-center justify-center transition-all duration-300 ease-out"
             onClick={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
           >
             
+            {/* Close Button */}
+            <button
+              onClick={closeModal}
+              onTouchEnd={closeModal}
+              className="absolute top-2 right-2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors duration-200"
+              aria-label="Close modal"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
             {/* Image */}
             {selectedImage.image && urlForImage(selectedImage.image) ? (
               <div className="relative max-w-full max-h-full">
@@ -303,8 +322,8 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
                   alt={selectedImage.image.alt || selectedImage.name || 'Gallery image'}
                   width={0}
                   height={0}
-                  sizes="70vw"
-                  className="w-auto h-auto max-w-full max-h-full object-contain rounded-lg border-4 border-white shadow-2xl"
+                  sizes="(max-width: 768px) 95vw, 70vw"
+                  className="w-auto h-auto max-w-full max-h-full object-contain rounded-lg border-2 sm:border-4 border-white shadow-2xl"
                   priority
                   onLoad={() => setIsImageLoading(false)}
                   onError={() => setIsImageLoading(false)}
