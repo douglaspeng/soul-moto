@@ -29,24 +29,24 @@ export default function AboutUsClient({ persons }: AboutUsClientProps) {
       
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-20 about-us-content">
-        <div className="flex flex-col lg:flex-row items-center min-h-[60vh] gap-8 about-us-layout">
+        <div className="flex flex-col items-center gap-8 about-us-layout">
           {/* Text Content Container with Glass Effect - Top/Right Side */}
-          <div className="w-full lg:flex-1 lg:max-w-2xl bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 space-y-6 text-white about-us-text-container">
+          <div className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 space-y-6 text-white about-us-text-container">
             <h2 className="text-5xl md:text-6xl font-bold tracking-tighter uppercase text-white about-us-title">
             团队介绍
             </h2>
             
             <div className="space-y-4 text-lg leading-relaxed text-white about-us-description">
               <p>
-                Soul Moto Crew —— 不只是一个团队，而是一群燃烧着激情的骑士。我们因热爱而聚，因自由而行，肩负着让摩托文化不断传承与进化的使命。这里有赛道的轰鸣，有兄弟的笑声，也有两轮带来的无尽冒险。
+                Soul Moto Crew —— 我们最初，只是一群单纯热爱摩托的人。有人沉醉于山路的弯道，有人只是单纯享受两轮带来的自由。但当这些心怀热情的人走到一起，我们发现，这不仅仅是骑车——这是属于骑士们的生活方式。
               </p>
               
               <p>
-                我们不仅守护摩托的历史与精神，更不断探索创新与突破。通过安全倡议、骑行教育，以及对未来摩托科技的支持，我们让骑士之路更加稳健、更加长远。
+                在这里，有轰鸣的引擎声作伴，有并肩驰骋的兄弟姐妹。我们相信，摩托不只是速度，更是一种责任和态度。为了让更多人安全地感受骑行的乐趣。
               </p>
               
               <p>
-              我们的目标很简单：凝聚摩托社群，让更多人感受速度与热血，启发新一代去追逐风的自由。无论你是驰骋多年的老将，还是初次上路的新手，只要心中有火，Soul Moto Crew 就欢迎你加入，一起用两轮书写属于我们的传奇。
+                我们的使命很简单：凝聚社群，让热爱不再孤单；传递激情，让自由永不停息。无论你是驰骋多年的老将，还是刚刚入门的新手，只要你心中有火，Soul Moto Crew 就会在这里，和你一起骑向远方。
               </p>
             </div>
             
@@ -74,40 +74,44 @@ export default function AboutUsClient({ persons }: AboutUsClientProps) {
           {/* Team Members Section - Bottom/Left Side */}
           {persons && persons.length > 0 && (
             <div className="w-full lg:w-1/3 space-y-4 about-us-team-section">
-              <h3 className="text-2xl font-bold text-white mb-6 about-us-team-title">团队成员</h3>
-              <div className="space-y-3 about-us-team-list">
+              <h3 className="text-2xl font-bold text-white mb-6 about-us-team-title">管理成员</h3>
+              <div className="flex flex-wrap gap-3 about-us-team-list items-start">
                 {persons.map((person: any) => (
                   <div 
                     key={person._id}
-                    className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 flex items-center gap-4 about-us-team-member"
+                    className="group rounded-xl p-4 pb-2 flex flex-col items-center text-center transition-all duration-500 ease-out hover:bg-white/20 hover:shadow-lg w-[120px] h-[120px] hover:w-64 hover:h-auto about-us-team-member transition-[width] duration-300"
                   >
                     {/* Profile Picture */}
-                    <div className="flex-shrink-0 about-us-team-member-avatar">
+                    <div className="flex-shrink-0 mb-2 about-us-team-member-avatar">
                       {person.picture && urlForImage(person.picture) ? (
-                        <div className="w-15 h-15 rounded-full overflow-hidden about-us-team-member-image">
+                        <div className="w-16 h-16 group-hover:w-20 group-hover:h-20 rounded-full overflow-hidden about-us-team-member-image transition-all duration-500 ease-out">
                           <Image
                             src={urlForImage(person.picture)?.url() || ''}
                             alt={person.picture.alt || person.name}
-                            width={60}
-                            height={60}
+                            width={48}
+                            height={48}
                             className="w-full h-full object-cover"
                           />
                         </div>
                       ) : (
-                        <div className="w-15 h-15 bg-white/20 rounded-full flex items-center justify-center about-us-team-member-placeholder">
-                          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-16 h-16 group-hover:w-20 group-hover:h-20 bg-white/20 rounded-full flex items-center justify-center about-us-team-member-placeholder transition-all duration-500 ease-out">
+                          <svg className="w-6 h-6 group-hover:w-10 group-hover:h-10 text-white transition-all duration-500 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                           </svg>
                         </div>
                       )}
                     </div>
                     
-                    {/* Name and Description */}
-                    <div className="flex-1 min-w-0 about-us-team-member-info">
-                      <h4 className="text-lg font-bold text-white truncate about-us-team-member-name">
+                    {/* Name - Always visible */}
+                    <div className="flex-shrink-0 mb-1 about-us-team-member-name-container">
+                      <h4 className="text-sm font-bold text-white about-us-team-member-name">
                         {person.name}
                       </h4>
-                      <p className="text-sm text-white/80 truncate hidden sm:block about-us-team-member-description">
+                    </div>
+                    
+                    {/* Description - Hidden by default, expands on hover */}
+                    <div className="w-full transition-all duration-500 ease-out max-h-0 group-hover:max-h-48 opacity-0 group-hover:opacity-100 about-us-team-member-description-container overflow-hidden group-hover:delay-300">
+                      <p className="text-sm text-white/80 about-us-team-member-description px-2 leading-relaxed mb-0">
                         {person.description || 'Motorcycle enthusiast and community builder'}
                       </p>
                     </div>
