@@ -21,6 +21,13 @@ export default async function Events() {
     query: eventsQuery,
   })
 
+  // Sort events by date (latest first) as a fallback
+  const sortedEvents = events?.sort((a: Event, b: Event) => {
+    const dateA = new Date(a.date)
+    const dateB = new Date(b.date)
+    return dateB.getTime() - dateA.getTime()
+  }) || []
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {
@@ -78,9 +85,9 @@ export default async function Events() {
       {/* Events List */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 events-list-section">
         <div className="max-w-6xl mx-auto events-list-container">
-          {events && events.length > 0 ? (
+          {sortedEvents && sortedEvents.length > 0 ? (
             <div className="space-y-8 events-list">
-              {events.map((event: Event) => (
+              {sortedEvents.map((event: Event) => (
                 <Link
                   key={event._id}
                   href={`/events/${event._id}`}

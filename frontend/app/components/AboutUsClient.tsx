@@ -32,7 +32,7 @@ export default function AboutUsClient({ persons }: AboutUsClientProps) {
         <div className="flex flex-col items-center gap-8 about-us-layout">
           {/* Text Content Container with Glass Effect - Top/Right Side */}
           <div className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 space-y-6 text-white about-us-text-container">
-            <h2 className="text-5xl md:text-6xl font-bold tracking-tighter uppercase text-white about-us-title">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tighter uppercase text-white about-us-title">
             团队介绍
             </h2>
             

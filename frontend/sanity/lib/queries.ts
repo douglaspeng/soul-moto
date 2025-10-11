@@ -117,7 +117,7 @@ export const galleryQuery = defineQuery(`
 `)
 
 export const eventsQuery = defineQuery(`
-  *[_type == "event"] | order(date asc, time asc) {
+  *[_type == "event"] | order(date desc, _createdAt desc) {
     _id,
     eventName,
     description,

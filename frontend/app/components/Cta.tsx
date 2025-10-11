@@ -1,7 +1,12 @@
 import {Suspense} from 'react'
 
 import ResolvedLink from '@/app/components/ResolvedLink'
-import {CallToAction} from '@/sanity.types'
+type CallToAction = {
+  heading: string
+  text: string
+  buttonText: string
+  link: any
+}
 
 type CtaProps = {
   block: CallToAction

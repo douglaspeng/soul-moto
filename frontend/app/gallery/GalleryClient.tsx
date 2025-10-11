@@ -21,6 +21,8 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
   const [galleryItems] = useState<GalleryItem[]>(initialItems)
   const [shuffleInstance, setShuffleInstance] = useState<Shuffle | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null)
+  const [isImageLoading, setIsImageLoading] = useState(false)
   const gridRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -83,6 +85,15 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
     if (ratio > 1.2) return 'portrait' // Tall images
     if (ratio < 0.8) return 'landscape' // Wide images
     return 'square' // Square-ish images
+  }
+
+  const openModal = (item: GalleryItem) => {
+    setSelectedImage(item)
+    setIsImageLoading(true)
+  }
+
+  const closeModal = () => {
+    setSelectedImage(null)
   }
 
   return (
@@ -190,6 +201,7 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
                   className={`gallery-item w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 mb-2 group cursor-pointer gallery-client-item ${
                     getImageClass(item.image)
                   }`}
+                  onClick={() => openModal(item)}
                 >
                   <div className="relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 mx-1 gallery-client-item-card">
                     <div className={`relative ${getImageClass(item.image) === 'portrait' ? 'aspect-[3/4]' : getImageClass(item.image) === 'landscape' ? 'aspect-[3/2]' : 'aspect-square'} gallery-client-item-aspect`}>
@@ -256,6 +268,59 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
           </button>
         </div>
       </section> */}
+      
+      {/* Image Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all duration-300 ease-out"
+          style={{
+            backgroundColor: '#ffffff52'
+          }}
+          onClick={closeModal}
+        >
+          <div 
+            className="relative max-w-[70vw] max-h-[70vh] flex items-center justify-center transition-all duration-300 ease-out"
+            onClick={(e) => e.stopPropagation()}
+          >
+            
+            {/* Image */}
+            {selectedImage.image && urlForImage(selectedImage.image) ? (
+              <div className="relative max-w-full max-h-full">
+                {isImageLoading && (
+                  <div className="absolute inset-0 bg-gray-200 rounded-lg border-4 border-white shadow-2xl animate-pulse">
+                    <div 
+                      className="w-full h-full rounded-lg"
+                      style={{
+                        background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                        backgroundSize: '200% 100%',
+                        animation: 'shimmer 2s infinite'
+                      }}
+                    ></div>
+                  </div>
+                )}
+                <Image
+                  src={urlForImage(selectedImage.image)?.url() || selectedImage.imageUrl || ''}
+                  alt={selectedImage.image.alt || selectedImage.name || 'Gallery image'}
+                  width={0}
+                  height={0}
+                  sizes="70vw"
+                  className="w-auto h-auto max-w-full max-h-full object-contain rounded-lg border-4 border-white shadow-2xl"
+                  priority
+                  onLoad={() => setIsImageLoading(false)}
+                  onError={() => setIsImageLoading(false)}
+                />
+              </div>
+            ) : (
+              <div className="w-full h-64 bg-gray-200 flex items-center justify-center rounded-lg">
+                <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            )}
+            
+          </div>
+        </div>
+      )}
       
       {/* Shimmer Animation Styles */}
       <style jsx>{`

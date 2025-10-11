@@ -830,7 +830,7 @@ export type PersonsQueryResult = Array<{
 // Query: *[_type == "gallery"] | order(_createdAt desc) {    _id,    name,    description,    image,    "imageUrl": image.asset->url  }
 export type GalleryQueryResult = Array<never>
 // Variable: eventsQuery
-// Query: *[_type == "event"] | order(date asc, time asc) {    _id,    eventName,    description,    detail,    date,    time,    category,    eventImage,    "imageUrl": eventImage.asset->url  }
+// Query: *[_type == "event"] | order(date desc, _createdAt desc) {    _id,    eventName,    description,    detail,    date,    time,    category,    eventImage,    "imageUrl": eventImage.asset->url  }
 export type EventsQueryResult = Array<never>
 // Variable: eventQuery
 // Query: *[_type == "event" && _id == $id][0] {    _id,    eventName,    description,    detail,    date,    time,    category,    eventImage,    "imageUrl": eventImage.asset->url  }
@@ -856,7 +856,7 @@ declare module '@sanity/client' {
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult
     '\n  *[_type == "person"] {\n    _id,\n    name,\n    description,\n    picture,\n    "imageUrl": picture.asset->url\n  }\n': PersonsQueryResult
     '\n  *[_type == "gallery"] | order(_createdAt desc) {\n    _id,\n    name,\n    description,\n    image,\n    "imageUrl": image.asset->url\n  }\n': GalleryQueryResult
-    '\n  *[_type == "event"] | order(date asc, time asc) {\n    _id,\n    eventName,\n    description,\n    detail,\n    date,\n    time,\n    category,\n    eventImage,\n    "imageUrl": eventImage.asset->url\n  }\n': EventsQueryResult
+    '\n  *[_type == "event"] | order(date desc, _createdAt desc) {\n    _id,\n    eventName,\n    description,\n    detail,\n    date,\n    time,\n    category,\n    eventImage,\n    "imageUrl": eventImage.asset->url\n  }\n': EventsQueryResult
     '\n  *[_type == "event" && _id == $id][0] {\n    _id,\n    eventName,\n    description,\n    detail,\n    date,\n    time,\n    category,\n    eventImage,\n    "imageUrl": eventImage.asset->url\n  }\n': EventQueryResult
     '\n  *[_type == "service" && isActive == true] | order(_createdAt desc) {\n    _id,\n    title,\n    description,\n    detailedDescription,\n    price,\n    category,\n    serviceImage,\n    "imageUrl": serviceImage.asset->url,\n    isActive\n  }\n': ServicesQueryResult
     '\n  *[_type == "service" && _id == $id][0] {\n    _id,\n    title,\n    description,\n    detailedDescription,\n    price,\n    category,\n    serviceImage,\n    "imageUrl": serviceImage.asset->url,\n    isActive\n  }\n': ServiceQueryResult
