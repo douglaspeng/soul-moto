@@ -285,7 +285,13 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
           onTouchEnd={closeModal}
         >
           <div 
-            className="relative w-full h-full max-w-[95vw] max-h-[95vh] sm:max-w-[70vw] sm:max-h-[70vh] flex items-center justify-center transition-all duration-300 ease-out"
+            className={`relative w-full h-full flex items-center justify-center transition-all duration-300 ease-out ${
+              getImageClass(selectedImage.image) === 'portrait' 
+                ? 'max-w-[90vw] max-h-[90vh]' 
+                : getImageClass(selectedImage.image) === 'landscape'
+                ? 'max-w-[90vw] max-h-[90vh]'
+                : 'max-w-[90vw] max-h-[90vh]'
+            }`}
             onClick={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
           >
@@ -304,7 +310,13 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
 
             {/* Image */}
             {selectedImage.image && urlForImage(selectedImage.image) ? (
-              <div className="relative max-w-full max-h-full">
+              <div className={`relative ${
+                getImageClass(selectedImage.image) === 'portrait' 
+                  ? 'max-h-[90vh] w-auto' 
+                  : getImageClass(selectedImage.image) === 'landscape'
+                  ? 'max-w-[90vw] h-auto'
+                  : 'max-w-[90vw] max-h-[90vh]'
+              }`}>
                 {isImageLoading && (
                   <div className="absolute inset-0 bg-gray-200 rounded-lg border-4 border-white shadow-2xl animate-pulse">
                     <div 
@@ -322,8 +334,14 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
                   alt={selectedImage.image.alt || selectedImage.name || 'Gallery image'}
                   width={0}
                   height={0}
-                  sizes="(max-width: 768px) 95vw, 70vw"
-                  className="w-auto h-auto max-w-full max-h-full object-contain rounded-lg border-2 sm:border-4 border-white shadow-2xl"
+                  sizes="(max-width: 768px) 90vw, 70vw"
+                  className={`w-auto h-auto object-contain rounded-lg border-2 sm:border-4 border-white shadow-2xl ${
+                    getImageClass(selectedImage.image) === 'portrait' 
+                      ? 'max-h-[90vh] w-auto' 
+                      : getImageClass(selectedImage.image) === 'landscape'
+                      ? 'max-w-[90vw] h-auto'
+                      : 'max-w-[90vw] max-h-[90vh]'
+                  }`}
                   priority
                   onLoad={() => setIsImageLoading(false)}
                   onError={() => setIsImageLoading(false)}
