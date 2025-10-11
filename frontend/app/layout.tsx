@@ -48,6 +48,11 @@ export async function generateMetadata(): Promise<Metadata> {
       default: title,
     },
     description: toPlainText(description),
+    icons: {
+      icon: '/images/smc-small-icon-3.png',
+      shortcut: '/images/smc-small-icon-3.png',
+      apple: '/images/smc-small-icon-3.png',
+    },
     openGraph: {
       images: ogImage ? [ogImage] : [],
     },

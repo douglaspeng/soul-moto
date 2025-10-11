@@ -2,15 +2,14 @@ import styles from './SideBySideIcons.module.css'
 
 export default function SideBySideIcons() {
   return (
-    <div className="relative flex gap-[0] group">
-      <div className="z-10 aspect-square w-[400px] h-[400px] flex justify-center items-center  transform translate-x-2 group-hover:scale-110 group-hover:-translate-x-5 transition-all duration-300">
+    <div className="relative flex gap-[0] group side-by-side-icons-container">
+      <div className="z-10 aspect-square w-[400px] h-[400px] flex justify-center items-center transform translate-x-2 group-hover:scale-110 group-hover:-translate-x-5 transition-all duration-300 side-by-side-icons-wrapper">
         <img
           src="/images/lg-white-text.svg.svg"
           alt="SMC Icon"
-          className={`w-full duration-300 transition ${styles.iconImage}`}
+          className={`w-full duration-300 transition side-by-side-icons-image ${styles.iconImage}`}
         />
       </div>
-    
     </div>
   )
 }
