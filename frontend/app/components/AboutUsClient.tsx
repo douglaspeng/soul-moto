@@ -73,9 +73,9 @@ export default function AboutUsClient({ persons }: AboutUsClientProps) {
           
           {/* Team Members Section - Bottom/Left Side */}
           {persons && persons.length > 0 && (
-            <div className="w-full lg:w-1/3 space-y-4 about-us-team-section">
+            <div className="w-full space-y-4 about-us-team-section">
               <h3 className="text-2xl font-bold text-white mb-6 about-us-team-title">管理成员</h3>
-              <div className="flex flex-wrap gap-3 about-us-team-list items-start">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 about-us-team-list items-start">
                 {persons.map((person: any) => (
                   <div 
                     key={person._id}

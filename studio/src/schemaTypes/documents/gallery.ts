@@ -54,6 +54,13 @@ export const gallery = defineType({
       description: 'Optional description for the gallery item',
       rows: 3,
     }),
+    defineField({
+      name: 'relatedEvent',
+      title: 'Related Event',
+      type: 'reference',
+      to: [{type: 'event'}],
+      description: 'Optional: Link this gallery image to a specific event. If not selected, this will be a general gallery image.',
+    }),
   ],
   // List preview configuration
   preview: {
@@ -61,11 +68,16 @@ export const gallery = defineType({
       name: 'name',
       description: 'description',
       image: 'image',
+      relatedEvent: 'relatedEvent.eventName',
     },
     prepare(selection) {
+      const subtitle = selection.relatedEvent 
+        ? `Related to: ${selection.relatedEvent}` 
+        : selection.description || 'General gallery image'
+      
       return {
         title: selection.name || 'Untitled Gallery Item',
-        subtitle: selection.description || 'No description',
+        subtitle,
         media: selection.image,
       }
     },

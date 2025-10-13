@@ -4,6 +4,7 @@ import {useEffect, useRef, useState} from 'react'
 import Image from 'next/image'
 import {urlForImage} from '@/sanity/lib/utils'
 import Shuffle from 'shufflejs'
+import GalleryModal from '@/app/components/GalleryModal'
 
 interface GalleryItem {
   _id: string
@@ -11,6 +12,10 @@ interface GalleryItem {
   description?: string
   image: any
   imageUrl?: string
+  relatedEvent?: {
+    _id: string
+    eventName: string
+  }
 }
 
 interface GalleryClientProps {
@@ -22,7 +27,7 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
   const [shuffleInstance, setShuffleInstance] = useState<Shuffle | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null)
-  const [isImageLoading, setIsImageLoading] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const gridRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -89,14 +94,14 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
 
   const openModal = (item: GalleryItem) => {
     setSelectedImage(item)
-    setIsImageLoading(true)
+    setIsModalOpen(true)
     // Prevent body scrolling on mobile
     document.body.style.overflow = 'hidden'
   }
 
   const closeModal = () => {
+    setIsModalOpen(false)
     setSelectedImage(null)
-    setIsImageLoading(false)
     // Restore body scrolling
     document.body.style.overflow = 'unset'
   }
@@ -230,6 +235,14 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
                       {/* Hover overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/0 via-black/0 to-black/0 group-hover:from-black/60 group-hover:via-black/40 group-hover:to-black/20 transition-all duration-300 flex items-end pointer-events-none gallery-client-item-overlay">
                         <div className="w-full p-4 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 gallery-client-item-content">
+                          {item.relatedEvent && (
+                            <div className="inline-flex items-center gap-1 mb-2 px-2 py-1 bg-blue-600/80 rounded-full text-xs font-medium drop-shadow-lg gallery-client-item-event-badge">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              {item.relatedEvent.eventName}
+                            </div>
+                          )}
                           {item.name && (
                             <h3 className="text-lg font-semibold mb-1 drop-shadow-lg gallery-client-item-title">{item.name}</h3>
                           )}
@@ -274,102 +287,12 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
         </div>
       </section> */}
       
-      {/* Image Modal */}
-      {selectedImage && (
-        <div 
-          className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-2 sm:p-4 transition-all duration-300 ease-out"
-          style={{
-            backgroundColor: '#ffffff52'
-          }}
-          onClick={closeModal}
-          onTouchEnd={closeModal}
-        >
-          <div 
-            className={`relative w-full h-full flex items-center justify-center transition-all duration-300 ease-out ${
-              getImageClass(selectedImage.image) === 'portrait' 
-                ? 'max-w-[90vw] max-h-[90vh]' 
-                : getImageClass(selectedImage.image) === 'landscape'
-                ? 'max-w-[90vw] max-h-[90vh]'
-                : 'max-w-[90vw] max-h-[90vh]'
-            }`}
-            onClick={(e) => e.stopPropagation()}
-            onTouchEnd={(e) => e.stopPropagation()}
-          >
-            
-            {/* Close Button */}
-            <button
-              onClick={closeModal}
-              onTouchEnd={closeModal}
-              className="absolute top-2 right-2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors duration-200"
-              aria-label="Close modal"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            {/* Image */}
-            {selectedImage.image && urlForImage(selectedImage.image) ? (
-              <div className={`relative ${
-                getImageClass(selectedImage.image) === 'portrait' 
-                  ? 'max-h-[90vh] w-auto' 
-                  : getImageClass(selectedImage.image) === 'landscape'
-                  ? 'max-w-[90vw] h-auto'
-                  : 'max-w-[90vw] max-h-[90vh]'
-              }`}>
-                {isImageLoading && (
-                  <div className="absolute inset-0 bg-gray-200 rounded-lg border-4 border-white shadow-2xl animate-pulse">
-                    <div 
-                      className="w-full h-full rounded-lg"
-                      style={{
-                        background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
-                        backgroundSize: '200% 100%',
-                        animation: 'shimmer 2s infinite'
-                      }}
-                    ></div>
-                  </div>
-                )}
-                <Image
-                  src={urlForImage(selectedImage.image)?.url() || selectedImage.imageUrl || ''}
-                  alt={selectedImage.image.alt || selectedImage.name || 'Gallery image'}
-                  width={0}
-                  height={0}
-                  sizes="(max-width: 768px) 90vw, 70vw"
-                  className={`w-auto h-auto object-contain rounded-lg border-2 sm:border-4 border-white shadow-2xl ${
-                    getImageClass(selectedImage.image) === 'portrait' 
-                      ? 'max-h-[90vh] w-auto' 
-                      : getImageClass(selectedImage.image) === 'landscape'
-                      ? 'max-w-[90vw] h-auto'
-                      : 'max-w-[90vw] max-h-[90vh]'
-                  }`}
-                  priority
-                  onLoad={() => setIsImageLoading(false)}
-                  onError={() => setIsImageLoading(false)}
-                />
-              </div>
-            ) : (
-              <div className="w-full h-64 bg-gray-200 flex items-center justify-center rounded-lg">
-                <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-            )}
-            
-          </div>
-        </div>
-      )}
-      
-      {/* Shimmer Animation Styles */}
-      <style jsx>{`
-        @keyframes shimmer {
-          0% {
-            background-position: -200% 0;
-          }
-          100% {
-            background-position: 200% 0;
-          }
-        }
-      `}</style>
+      {/* Reusable Gallery Modal */}
+      <GalleryModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        selectedImage={selectedImage}
+      />
     </div>
   )
 }

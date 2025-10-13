@@ -1,7 +1,7 @@
 import {PortableText} from '@portabletext/react'
 
 import AboutUs from '@/app/components/AboutUs'
-import Gallery from '@/app/components/Gallery'
+import Gallery from '@/app/components/GallerySection'
 import SideBySideIcons from '@/app/components/SideBySideIcons'
 import {settingsQuery} from '@/sanity/lib/queries'
 import {sanityFetch} from '@/sanity/lib/live'

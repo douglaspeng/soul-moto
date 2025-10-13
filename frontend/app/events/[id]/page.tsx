@@ -1,10 +1,11 @@
 import {sanityFetch} from '@/sanity/lib/live'
-import {eventQuery} from '@/sanity/lib/queries'
+import {eventQuery, galleryImagesForEventQuery} from '@/sanity/lib/queries'
 import Image from 'next/image'
 import {urlForImage} from '@/sanity/lib/utils'
 import Link from 'next/link'
 import {notFound} from 'next/navigation'
 import ShareButton from './ShareButton'
+import EventGalleryClient from './EventGalleryClient'
 
 interface Event {
   _id: string
@@ -18,6 +19,15 @@ interface Event {
   imageUrl?: string
 }
 
+interface GalleryImage {
+  _id: string
+  name?: string
+  description?: string
+  image: any
+  imageUrl?: string
+  relatedEvent?: any
+}
+
 interface EventDetailProps {
   params: Promise<{
     id: string
@@ -26,10 +36,21 @@ interface EventDetailProps {
 
 export default async function EventDetail({params}: EventDetailProps) {
   const {id} = await params
-  const {data: event} = await sanityFetch({
-    query: eventQuery,
-    params: {id},
-  })
+  
+  // Fetch event data and related gallery images in parallel
+  const [eventResult, galleryResult] = await Promise.all([
+    sanityFetch({
+      query: eventQuery,
+      params: {id},
+    }),
+    sanityFetch({
+      query: galleryImagesForEventQuery,
+      params: {eventId: id},
+    })
+  ])
+
+  const event = eventResult.data
+  const galleryImages = galleryResult.data as GalleryImage[]
 
   if (!event) {
     notFound()
@@ -187,6 +208,18 @@ export default async function EventDetail({params}: EventDetailProps) {
           </div>
         </div>
       </section>
+
+      {/* Event Gallery Section */}
+      {galleryImages && galleryImages.length > 0 && (
+        <section className="py-16 px-4 sm:px-6 lg:px-8 event-gallery-section">
+          <div className="max-w-6xl mx-auto event-gallery-container">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center event-gallery-title">
+              活动照片
+            </h2>
+            <EventGalleryClient galleryImages={galleryImages} />
+          </div>
+        </section>
+      )}
 
       {/* Related Events or Call to Action, we don't need this for now */}
       {/* <section className="py-16 px-4 sm:px-6 lg:px-8 event-detail-cta-section">
