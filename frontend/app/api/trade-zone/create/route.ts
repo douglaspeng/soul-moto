@@ -47,6 +47,15 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // Find the user in Sanity by email
+    const user = await client.fetch(`*[_type == "user" && email == $email][0]`, {
+      email: session.user.email
+    })
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
     // Create the trade zone item
     const tradeZoneItem = await client.create({
       _type: 'tradeZone',
@@ -61,7 +70,7 @@ export async function POST(request: NextRequest) {
       isActive: true,
       seller: {
         _type: 'reference',
-        _ref: session.user.id, // This will be the user's Sanity ID
+        _ref: user._id, // Use the Sanity user ID
       },
     })
 
