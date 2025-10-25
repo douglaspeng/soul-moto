@@ -6,14 +6,11 @@ import {urlForImage} from '@/sanity/lib/utils'
 
 interface GalleryItem {
   _id: string
-  name?: string
-  description?: string
+  name?: string | null
+  description?: string | null
   image: any
-  imageUrl?: string
-  relatedEvent?: {
-    _id: string
-    eventName: string
-  }
+  imageUrl?: string | null
+  relatedEvent?: any
 }
 
 interface GalleryModalProps {

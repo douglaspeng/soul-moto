@@ -111,6 +111,89 @@ export type BlockContent = Array<{
   _key: string
 }>
 
+export type Service = {
+  _id: string
+  _type: 'service'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  description: string
+  detailedDescription?: string
+  price?: string
+  category: 'maintenance' | 'repair' | 'customization' | 'consultation' | 'training' | 'other'
+  serviceImage?: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  isActive?: boolean
+}
+
+export type Gallery = {
+  _id: string
+  _type: 'gallery'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  image: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  name?: string
+  description?: string
+  relatedEvent?: {
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    [internalGroqTypeReferenceTo]?: 'event'
+  }
+}
+
+export type Event = {
+  _id: string
+  _type: 'event'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  eventName: string
+  description: string
+  detail: string
+  date: string
+  time: string
+  category: 'social' | 'sport' | 'chill-ride' | 'fast-pace-ride'
+  eventImage?: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+}
+
 export type Settings = {
   _id: string
   _type: 'settings'
@@ -224,8 +307,8 @@ export type Person = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  firstName: string
-  lastName: string
+  name: string
+  description?: string
   picture: {
     asset?: {
       _ref: string
@@ -397,25 +480,25 @@ export type SanityImagePalette = {
 
 export type SanityImageDimensions = {
   _type: 'sanity.imageDimensions'
-  height?: number
-  width?: number
-  aspectRatio?: number
+  height: number
+  width: number
+  aspectRatio: number
 }
 
 export type SanityImageHotspot = {
   _type: 'sanity.imageHotspot'
-  x?: number
-  y?: number
-  height?: number
-  width?: number
+  x: number
+  y: number
+  height: number
+  width: number
 }
 
 export type SanityImageCrop = {
   _type: 'sanity.imageCrop'
-  top?: number
-  bottom?: number
-  left?: number
-  right?: number
+  top: number
+  bottom: number
+  left: number
+  right: number
 }
 
 export type SanityFileAsset = {
@@ -499,6 +582,9 @@ export type AllSanitySchemaTypes =
   | Link
   | InfoSection
   | BlockContent
+  | Service
+  | Gallery
+  | Event
   | Settings
   | Page
   | Post
@@ -676,8 +762,8 @@ export type AllPostsQueryResult = Array<{
   }
   date: string
   author: {
-    firstName: string
-    lastName: string
+    firstName: null
+    lastName: null
     picture: {
       asset?: {
         _ref: string
@@ -716,8 +802,8 @@ export type MorePostsQueryResult = Array<{
   }
   date: string
   author: {
-    firstName: string
-    lastName: string
+    firstName: null
+    lastName: null
     picture: {
       asset?: {
         _ref: string
@@ -778,8 +864,8 @@ export type PostQueryResult = {
   }
   date: string
   author: {
-    firstName: string
-    lastName: string
+    firstName: null
+    lastName: null
     picture: {
       asset?: {
         _ref: string
@@ -809,8 +895,8 @@ export type PagesSlugsResult = Array<{
 // Query: *[_type == "person"] {    _id,    name,    description,    picture,    "imageUrl": picture.asset->url  }
 export type PersonsQueryResult = Array<{
   _id: string
-  name: null
-  description: null
+  name: string
+  description: string | null
   picture: {
     asset?: {
       _ref: string
@@ -828,22 +914,164 @@ export type PersonsQueryResult = Array<{
 }>
 // Variable: galleryQuery
 // Query: *[_type == "gallery"] | order(_createdAt desc) {    _id,    name,    description,    image,    "imageUrl": image.asset->url,    relatedEvent  }
-export type GalleryQueryResult = Array<never>
+export type GalleryQueryResult = Array<{
+  _id: string
+  name: string | null
+  description: string | null
+  image: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  imageUrl: string | null
+  relatedEvent: {
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    [internalGroqTypeReferenceTo]?: 'event'
+  } | null
+}>
 // Variable: galleryImagesForEventQuery
 // Query: *[_type == "gallery" && relatedEvent._ref == $eventId] | order(_createdAt desc) {    _id,    name,    description,    image,    "imageUrl": image.asset->url,    relatedEvent  }
-export type GalleryImagesForEventQueryResult = Array<never>
+export type GalleryImagesForEventQueryResult = Array<{
+  _id: string
+  name: string | null
+  description: string | null
+  image: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  imageUrl: string | null
+  relatedEvent: {
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    [internalGroqTypeReferenceTo]?: 'event'
+  } | null
+}>
 // Variable: eventsQuery
 // Query: *[_type == "event"] | order(date desc, _createdAt desc) {    _id,    eventName,    description,    detail,    date,    time,    category,    eventImage,    "imageUrl": eventImage.asset->url  }
-export type EventsQueryResult = Array<never>
+export type EventsQueryResult = Array<{
+  _id: string
+  eventName: string
+  description: string
+  detail: string
+  date: string
+  time: string
+  category: 'chill-ride' | 'fast-pace-ride' | 'social' | 'sport'
+  eventImage: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  } | null
+  imageUrl: string | null
+}>
 // Variable: eventQuery
 // Query: *[_type == "event" && _id == $id][0] {    _id,    eventName,    description,    detail,    date,    time,    category,    eventImage,    "imageUrl": eventImage.asset->url  }
-export type EventQueryResult = null
+export type EventQueryResult = {
+  _id: string
+  eventName: string
+  description: string
+  detail: string
+  date: string
+  time: string
+  category: 'chill-ride' | 'fast-pace-ride' | 'social' | 'sport'
+  eventImage: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  } | null
+  imageUrl: string | null
+} | null
 // Variable: servicesQuery
 // Query: *[_type == "service" && isActive == true] | order(_createdAt desc) {    _id,    title,    description,    detailedDescription,    price,    category,    serviceImage,    "imageUrl": serviceImage.asset->url,    isActive  }
-export type ServicesQueryResult = Array<never>
+export type ServicesQueryResult = Array<{
+  _id: string
+  title: string
+  description: string
+  detailedDescription: string | null
+  price: string | null
+  category: 'consultation' | 'customization' | 'maintenance' | 'other' | 'repair' | 'training'
+  serviceImage: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  } | null
+  imageUrl: string | null
+  isActive: boolean | null
+}>
 // Variable: serviceQuery
 // Query: *[_type == "service" && _id == $id][0] {    _id,    title,    description,    detailedDescription,    price,    category,    serviceImage,    "imageUrl": serviceImage.asset->url,    isActive  }
-export type ServiceQueryResult = null
+export type ServiceQueryResult = {
+  _id: string
+  title: string
+  description: string
+  detailedDescription: string | null
+  price: string | null
+  category: 'consultation' | 'customization' | 'maintenance' | 'other' | 'repair' | 'training'
+  serviceImage: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  } | null
+  imageUrl: string | null
+  isActive: boolean | null
+} | null
+// Variable: tradeZoneQuery
+// Query: *[_type == "tradeZone" && isActive == true] | order(_createdAt desc) {    _id,    title,    sellingBy,    price,    description,    category,    condition,    images,    "imageUrls": images[].asset->url,    contactInfo,    _createdAt  }
+export type TradeZoneQueryResult = Array<never>
+// Variable: tradeZoneItemQuery
+// Query: *[_type == "tradeZone" && _id == $id][0] {    _id,    title,    sellingBy,    price,    description,    category,    condition,    images,    "imageUrls": images[].asset->url,    contactInfo,    _createdAt  }
+export type TradeZoneItemQueryResult = null
 
 // Query TypeMap
 import '@sanity/client'
@@ -864,5 +1092,7 @@ declare module '@sanity/client' {
     '\n  *[_type == "event" && _id == $id][0] {\n    _id,\n    eventName,\n    description,\n    detail,\n    date,\n    time,\n    category,\n    eventImage,\n    "imageUrl": eventImage.asset->url\n  }\n': EventQueryResult
     '\n  *[_type == "service" && isActive == true] | order(_createdAt desc) {\n    _id,\n    title,\n    description,\n    detailedDescription,\n    price,\n    category,\n    serviceImage,\n    "imageUrl": serviceImage.asset->url,\n    isActive\n  }\n': ServicesQueryResult
     '\n  *[_type == "service" && _id == $id][0] {\n    _id,\n    title,\n    description,\n    detailedDescription,\n    price,\n    category,\n    serviceImage,\n    "imageUrl": serviceImage.asset->url,\n    isActive\n  }\n': ServiceQueryResult
+    '\n  *[_type == "tradeZone" && isActive == true] | order(_createdAt desc) {\n    _id,\n    title,\n    sellingBy,\n    price,\n    description,\n    category,\n    condition,\n    images,\n    "imageUrls": images[].asset->url,\n    contactInfo,\n    _createdAt\n  }\n': TradeZoneQueryResult
+    '\n  *[_type == "tradeZone" && _id == $id][0] {\n    _id,\n    title,\n    sellingBy,\n    price,\n    description,\n    category,\n    condition,\n    images,\n    "imageUrls": images[].asset->url,\n    contactInfo,\n    _createdAt\n  }\n': TradeZoneItemQueryResult
   }
 }

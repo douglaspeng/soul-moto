@@ -115,6 +115,15 @@ export default function Navigation() {
             Services
           </Link>
         </li>
+        
+        <li className="navigation-item">
+          <Link 
+            href="/trade-zone" 
+            className={`hover:underline navigation-link ${isActive('/trade-zone') ? 'text-black font-semibold' : ''}`}
+          >
+            Trade Zone
+          </Link>
+        </li>
         <li className="navigation-item">
           <button 
             onClick={handleAboutUsClick}

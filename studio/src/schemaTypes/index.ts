@@ -4,6 +4,7 @@ import {post} from './documents/post'
 import {gallery} from './documents/gallery'
 import {event} from './documents/event'
 import {service} from './documents/service'
+import {tradeZone} from './documents/tradeZone'
 import {callToAction} from './objects/callToAction'
 import {infoSection} from './objects/infoSection'
 import {settings} from './singletons/settings'
@@ -22,6 +23,7 @@ export const schemaTypes = [
   gallery,
   event,
   service,
+  tradeZone,
   // Objects
   blockContent,
   infoSection,

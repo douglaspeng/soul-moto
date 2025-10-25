@@ -183,3 +183,35 @@ export const serviceQuery = defineQuery(`
     isActive
   }
 `)
+
+export const tradeZoneQuery = defineQuery(`
+  *[_type == "tradeZone" && isActive == true] | order(_createdAt desc) {
+    _id,
+    title,
+    sellingBy,
+    price,
+    description,
+    category,
+    condition,
+    images,
+    "imageUrls": images[].asset->url,
+    contactInfo,
+    _createdAt
+  }
+`)
+
+export const tradeZoneItemQuery = defineQuery(`
+  *[_type == "tradeZone" && _id == $id][0] {
+    _id,
+    title,
+    sellingBy,
+    price,
+    description,
+    category,
+    condition,
+    images,
+    "imageUrls": images[].asset->url,
+    contactInfo,
+    _createdAt
+  }
+`)

@@ -22,7 +22,7 @@ export default async function Events() {
   })
 
   // Sort events by date (latest first) as a fallback
-  const sortedEvents = events?.sort((a: Event, b: Event) => {
+  const sortedEvents = events?.sort((a: any, b: any) => {
     const dateA = new Date(a.date)
     const dateB = new Date(b.date)
     return dateB.getTime() - dateA.getTime()
@@ -87,7 +87,7 @@ export default async function Events() {
         <div className="max-w-6xl mx-auto events-list-container">
           {sortedEvents && sortedEvents.length > 0 ? (
             <div className="space-y-8 events-list">
-              {sortedEvents.map((event: Event) => (
+              {sortedEvents.map((event: any) => (
                 <Link
                   key={event._id}
                   href={`/events/${event._id}`}
