@@ -21,7 +21,7 @@ interface TradeZoneItem {
   seller?: {
     name?: string
     image?: any
-  }
+  } | null
   _createdAt: string
 }
 

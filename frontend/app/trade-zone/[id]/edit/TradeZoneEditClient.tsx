@@ -57,7 +57,7 @@ export default function TradeZoneEditClient({ item }: TradeZoneEditClientProps) 
   const [formData, setFormData] = useState<FormData>({
     title: item.title,
     sellingBy: item.sellingBy,
-    nickname: '', // Will be populated from existing data if available
+    nickname: item.sellingBy, // Pre-populate with existing display name
     price: item.price,
     description: item.description,
     category: item.category,
