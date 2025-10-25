@@ -1,6 +1,7 @@
 import {settingsQuery} from '@/sanity/lib/queries'
 import {sanityFetch} from '@/sanity/lib/live'
 import Navigation from './Navigation'
+import AuthButton from './AuthButton'
 
 export default async function Header() {
   const {data: settings} = await sanityFetch({
@@ -18,6 +19,7 @@ export default async function Header() {
           </Link> */}
 
           <Navigation />
+          <AuthButton />
         </div>
       </div>
     </header>

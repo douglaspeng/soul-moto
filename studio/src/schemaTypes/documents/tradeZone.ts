@@ -25,6 +25,14 @@ export const tradeZone = defineType({
       validation: (rule) => rule.required().max(50),
     }),
     defineField({
+      name: 'seller',
+      title: 'Seller',
+      type: 'reference',
+      to: [{type: 'user'}],
+      description: 'User who is selling this item',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
       name: 'price',
       title: 'Price',
       type: 'number',

@@ -196,6 +196,10 @@ export const tradeZoneQuery = defineQuery(`
     images,
     "imageUrls": images[].asset->url,
     contactInfo,
+    seller->{
+      name,
+      image
+    },
     _createdAt
   }
 `)
@@ -212,6 +216,10 @@ export const tradeZoneItemQuery = defineQuery(`
     images,
     "imageUrls": images[].asset->url,
     contactInfo,
+    seller->{
+      name,
+      image
+    },
     _createdAt
   }
 `)
