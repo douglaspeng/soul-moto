@@ -117,14 +117,14 @@ export default function TradeZoneClient({ tradeItems }: TradeZoneClientProps) {
   return (
     <div className="min-h-screen bg-white trade-zone-page">
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 trade-zone-hero-section">
+      <section className="pt-10 px-4 sm:px-6 lg:px-8 trade-zone-hero-section">
         <div className="max-w-6xl mx-auto text-center trade-zone-hero-container">
           <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 trade-zone-hero-title">
             Trade Zone
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto trade-zone-hero-description">
-            Buy and sell motorcycles, gear, parts, and accessories within our community. 
-            Find great deals from trusted riders.
+            在我们的社区内买卖摩托车、装备、零件和配件。
+            从可信赖的骑士那里找到超值好物。
           </p>
           
           {/* Start Selling Button */}

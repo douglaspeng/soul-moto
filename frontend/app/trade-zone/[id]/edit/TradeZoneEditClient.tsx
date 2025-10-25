@@ -5,6 +5,29 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import SuccessNotification from '@/app/components/SuccessNotification'
+import { urlForImage } from '@/sanity/lib/utils'
+
+interface TradeZoneItem {
+  _id: string
+  title: string
+  sellingBy: string
+  price: number
+  description: string
+  category: string
+  condition: string
+  images: any[]
+  imageUrls: string[]
+  contactInfo?: {
+    phone?: string
+    email?: string
+    location?: string
+  }
+  seller?: {
+    name?: string
+    image?: any
+  }
+  _createdAt: string
+}
 
 interface FormData {
   title: string
@@ -22,29 +45,33 @@ interface FormData {
   }
 }
 
-export default function SellPage() {
+interface TradeZoneEditClientProps {
+  item: TradeZoneItem
+}
+
+export default function TradeZoneEditClient({ item }: TradeZoneEditClientProps) {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [formData, setFormData] = useState<FormData>({
-    title: '',
-    sellingBy: session?.user?.name || '',
-    nickname: '',
-    price: 0,
-    description: '',
-    category: '',
-    condition: '',
+    title: item.title,
+    sellingBy: item.sellingBy,
+    nickname: '', // Will be populated from existing data if available
+    price: item.price,
+    description: item.description,
+    category: item.category,
+    condition: item.condition,
     images: [],
     contactInfo: {
-      phone: '',
-      email: session?.user?.email || '',
-      location: ''
+      phone: item.contactInfo?.phone || '',
+      email: item.contactInfo?.email || '',
+      location: item.contactInfo?.location || ''
     }
   })
-  const [priceInput, setPriceInput] = useState('')
+  const [priceInput, setPriceInput] = useState(item.price.toString())
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
+  const [existingImages, setExistingImages] = useState(item.images || [])
 
   useEffect(() => {
     if (status === 'loading') return
@@ -57,10 +84,10 @@ export default function SellPage() {
     if (session?.user) {
       setFormData(prev => ({
         ...prev,
-        sellingBy: session.user?.name || '',
+        sellingBy: session.user?.name || prev.sellingBy,
         contactInfo: {
           ...prev.contactInfo,
-          email: session.user?.email || ''
+          email: session.user?.email || prev.contactInfo.email
         }
       }))
     }
@@ -109,6 +136,10 @@ export default function SellPage() {
     })
   }
 
+  const removeExistingImage = (index: number) => {
+    setExistingImages(prev => prev.filter((_, i) => i !== index))
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -125,26 +156,29 @@ export default function SellPage() {
       submitData.append('condition', formData.condition)
       submitData.append('contactInfo', JSON.stringify(formData.contactInfo))
       
-      // Add images to FormData
+      // Add new images to FormData
       formData.images.forEach((image) => {
         submitData.append('images', image)
       })
 
-      const response = await fetch('/api/trade-zone/create', {
-        method: 'POST',
+      // Add existing images info
+      submitData.append('existingImages', JSON.stringify(existingImages))
+
+      const response = await fetch(`/api/trade-zone/${item._id}/update`, {
+        method: 'PUT',
         body: submitData,
       })
 
       const result = await response.json()
 
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to create item')
+        throw new Error(result.error || 'Failed to update item')
       }
 
       setShowSuccess(true)
     } catch (error) {
-      console.error('Error posting item:', error)
-      alert(`Error posting item: ${error instanceof Error ? error.message : 'Please try again.'}`)
+      console.error('Error updating item:', error)
+      alert(`Error updating item: ${error instanceof Error ? error.message : 'Please try again.'}`)
     } finally {
       setIsSubmitting(false)
     }
@@ -182,8 +216,8 @@ export default function SellPage() {
       <SuccessNotification
         isVisible={showSuccess}
         onClose={() => setShowSuccess(false)}
-        message="Your item has been posted successfully!"
-        redirectUrl="/trade-zone"
+        message="Your item has been updated successfully!"
+        redirectUrl={`/trade-zone/${item._id}`}
       />
 
       {/* Header */}
@@ -201,9 +235,9 @@ export default function SellPage() {
             </button>
           </div>
           
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Sell Your Item</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Edit Item</h1>
           <p className="text-lg text-gray-600">
-            List your motorcycle, gear, parts, or accessories for sale in our community.
+            Update your item details and images.
           </p>
         </div>
       </section>
@@ -339,9 +373,38 @@ export default function SellPage() {
               <div className="space-y-6">
                 <h2 className="text-xl font-semibold text-gray-900">Images</h2>
                 
+                {/* Existing Images */}
+                {existingImages.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Current Images
+                    </label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                      {existingImages.map((image, index) => (
+                        <div key={index} className="relative">
+                          <Image
+                            src={urlForImage(image)?.url() || ''}
+                            alt={`Current image ${index + 1}`}
+                            width={150}
+                            height={150}
+                            className="w-full h-32 object-cover rounded-lg"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeExistingImage(index)}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
                 <div>
                   <label htmlFor="images" className="block text-sm font-medium text-gray-700 mb-2">
-                    Upload Images (Max 5) *
+                    Add New Images (Max 5 total)
                   </label>
                   <input
                     type="file"
@@ -353,31 +416,36 @@ export default function SellPage() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                   <p className="text-sm text-gray-500 mt-1">
-                    Upload up to 5 images. First image will be used as the main image.
+                    Upload new images to add to your listing.
                   </p>
                 </div>
 
-                {/* Image Previews */}
+                {/* New Image Previews */}
                 {imagePreviews.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    {imagePreviews.map((preview, index) => (
-                      <div key={index} className="relative">
-                        <Image
-                          src={preview}
-                          alt={`Preview ${index + 1}`}
-                          width={150}
-                          height={150}
-                          className="w-full h-32 object-cover rounded-lg"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      New Images Preview
+                    </label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                      {imagePreviews.map((preview, index) => (
+                        <div key={index} className="relative">
+                          <Image
+                            src={preview}
+                            alt={`Preview ${index + 1}`}
+                            width={150}
+                            height={150}
+                            className="w-full h-32 object-cover rounded-lg"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -445,16 +513,16 @@ export default function SellPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmitting || formData.images.length === 0}
+                  disabled={isSubmitting || (existingImages.length === 0 && formData.images.length === 0)}
                   className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
                 >
                   {isSubmitting ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Posting...
+                      Updating...
                     </>
                   ) : (
-                    'Post Item'
+                    'Update Item'
                   )}
                 </button>
               </div>

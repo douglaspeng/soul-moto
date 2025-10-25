@@ -1,7 +1,7 @@
 import {sanityFetch} from '@/sanity/lib/live'
 import {tradeZoneItemQuery} from '@/sanity/lib/queries'
 import {notFound} from 'next/navigation'
-import TradeZoneDetailClient from './TradeZoneDetailClient'
+import TradeZoneEditClient from '@/app/trade-zone/[id]/edit/TradeZoneEditClient'
 
 interface TradeZoneItem {
   _id: string
@@ -25,13 +25,13 @@ interface TradeZoneItem {
   _createdAt: string
 }
 
-interface TradeZoneDetailProps {
+interface TradeZoneEditProps {
   params: Promise<{
     id: string
   }>
 }
 
-export default async function TradeZoneDetail({params}: TradeZoneDetailProps) {
+export default async function TradeZoneEdit({params}: TradeZoneEditProps) {
   const {id} = await params
   const {data: item} = await sanityFetch({
     query: tradeZoneItemQuery,
@@ -42,7 +42,7 @@ export default async function TradeZoneDetail({params}: TradeZoneDetailProps) {
     notFound()
   }
 
-  const tradeItem = item as TradeZoneItem
+  const tradeItem = item as any
 
-  return <TradeZoneDetailClient item={tradeItem} />
+  return <TradeZoneEditClient item={tradeItem} />
 }
