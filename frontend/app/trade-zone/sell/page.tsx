@@ -49,7 +49,8 @@ export default function SellPage() {
   useEffect(() => {
     if (status === 'loading') return
     if (!session) {
-      router.push('/auth/signin')
+      // Redirect to trade zone with a message that they need to sign in
+      router.push('/trade-zone')
     }
   }, [session, status, router])
 

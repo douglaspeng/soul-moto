@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { urlForImage } from '@/sanity/lib/utils'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useState, useRef, useEffect } from 'react'
 
 interface TradeZoneItem {
   _id: string
@@ -35,6 +36,22 @@ interface TradeZoneDetailClientProps {
 export default function TradeZoneDetailClient({ item }: TradeZoneDetailClientProps) {
   const { data: session } = useSession()
   const router = useRouter()
+  const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false)
+  const contactDropdownRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (contactDropdownRef.current && !contactDropdownRef.current.contains(event.target as Node)) {
+        setIsContactDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -118,6 +135,20 @@ export default function TradeZoneDetailClient({ item }: TradeZoneDetailClientPro
 
   // Check if current user is the owner
   const isOwner = session && session.user && session.user.email === item.contactInfo?.email
+
+  const handleEmailContact = () => {
+    if (item.contactInfo?.email) {
+      window.location.href = `mailto:${item.contactInfo.email}?subject=Inquiry about ${item.title}`
+    }
+    setIsContactDropdownOpen(false)
+  }
+
+  const handlePhoneContact = () => {
+    if (item.contactInfo?.phone) {
+      window.location.href = `sms:${item.contactInfo.phone}`
+    }
+    setIsContactDropdownOpen(false)
+  }
 
   return (
     <div className="min-h-screen bg-white trade-zone-detail-page">
@@ -274,16 +305,52 @@ export default function TradeZoneDetailClient({ item }: TradeZoneDetailClientPro
                     </p>
                   </div>
                 ) : (
-                  <button 
-                    onClick={() => {
-                      if (item.contactInfo?.email) {
-                        window.location.href = `mailto:${item.contactInfo.email}?subject=Inquiry about ${item.title}`
-                      }
-                    }}
-                    className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-4 px-8 rounded-lg transition-colors duration-200 trade-zone-detail-contact-button"
-                  >
-                    Contact Seller
-                  </button>
+                  <div className="relative" ref={contactDropdownRef}>
+                    <button 
+                      onClick={() => setIsContactDropdownOpen(!isContactDropdownOpen)}
+                      className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-4 px-8 rounded-lg transition-colors duration-200 trade-zone-detail-contact-button flex items-center justify-center gap-2"
+                    >
+                      Contact Seller
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    
+                    {/* Contact Dropdown */}
+                    {isContactDropdownOpen && (
+                      <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                        <div className="py-1">
+                          {item.contactInfo?.email && (
+                            <button
+                              onClick={handleEmailContact}
+                              className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-3"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                              </svg>
+                              Email Seller
+                            </button>
+                          )}
+                          {item.contactInfo?.phone && (
+                            <button
+                              onClick={handlePhoneContact}
+                              className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-3"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                              </svg>
+                              Text Seller
+                            </button>
+                          )}
+                          {!item.contactInfo?.email && !item.contactInfo?.phone && (
+                            <div className="px-4 py-3 text-sm text-gray-500">
+                              No contact information available
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

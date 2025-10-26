@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useSession, signIn } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { urlForImage } from '@/sanity/lib/utils'
@@ -33,6 +33,14 @@ interface TradeZoneClientProps {
 
 export default function TradeZoneClient({ tradeItems }: TradeZoneClientProps) {
   const { data: session, status } = useSession()
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signIn('google', { callbackUrl: '/trade-zone/sell' })
+    } catch (error) {
+      console.error('Sign in error:', error)
+    }
+  }
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -142,8 +150,8 @@ export default function TradeZoneClient({ tradeItems }: TradeZoneClientProps) {
             </div>
           ) : (
             <div className="mt-8">
-              <Link
-                href="/auth/signin"
+              <button
+                onClick={handleGoogleSignIn}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -165,7 +173,7 @@ export default function TradeZoneClient({ tradeItems }: TradeZoneClientProps) {
                   />
                 </svg>
                 Sign in with Google to Sell
-              </Link>
+              </button>
             </div>
           )}
         </div>
