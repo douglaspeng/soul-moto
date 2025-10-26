@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
       
       uploadedImages.push({
         _type: 'image',
+        _key: `image-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         asset: {
           _type: 'reference',
           _ref: asset._id,
@@ -47,17 +48,13 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Find the user in Sanity by email
+    // Find the user in Sanity by email (only for logged-in users)
     const user = await client.fetch(`*[_type == "user" && email == $email][0]`, {
       email: session.user.email
     })
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
     // Create the trade zone item
-    const tradeZoneItem = await client.create({
+    const tradeZoneItemData: any = {
       _type: 'tradeZone',
       title,
       sellingBy: nickname || sellingBy, // Use nickname if provided, otherwise use real name
@@ -68,11 +65,17 @@ export async function POST(request: NextRequest) {
       images: uploadedImages,
       contactInfo,
       isActive: true,
-      seller: {
+    }
+
+    // Only add seller reference if user is found (for logged-in users)
+    if (user) {
+      tradeZoneItemData.seller = {
         _type: 'reference',
         _ref: user._id, // Use the Sanity user ID
-      },
-    })
+      }
+    }
+
+    const tradeZoneItem = await client.create(tradeZoneItemData)
 
     return NextResponse.json({ 
       success: true, 
