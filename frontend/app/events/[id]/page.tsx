@@ -101,7 +101,7 @@ export default async function EventDetail({params}: EventDetailProps) {
   return (
     <div className="min-h-screen bg-white event-detail-page">
       {/* Back Button */}
-      <section className="pt-32 pb-8 px-4 sm:px-6 lg:px-8 event-detail-back-section">
+      <section className="pt-10 pb-8 px-4 sm:px-6 lg:px-8 event-detail-back-section">
         <div className="max-w-6xl mx-auto event-detail-back-container">
           <Link
             href="/events"

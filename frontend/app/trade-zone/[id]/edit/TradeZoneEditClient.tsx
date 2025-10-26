@@ -221,7 +221,7 @@ export default function TradeZoneEditClient({ item }: TradeZoneEditClientProps) 
       />
 
       {/* Header */}
-      <section className="pt-32 pb-8 px-4 sm:px-6 lg:px-8">
+      <section className="pt-10 pb-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4 mb-6">
             <button

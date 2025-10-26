@@ -71,7 +71,7 @@ export default async function Events() {
   return (
     <div className="min-h-screen bg-white events-page">
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 events-hero-section">
+      <section className="pt-10 pb-10 px-4 sm:px-6 lg:px-8 events-hero-section">
         <div className="max-w-4xl mx-auto text-center events-hero-content">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 events-hero-title">
             活动与聚会

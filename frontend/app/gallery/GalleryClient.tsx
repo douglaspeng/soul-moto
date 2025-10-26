@@ -106,7 +106,7 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
   return (
     <div className="min-h-screen bg-white gallery-client-page">
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 gallery-client-hero-section">
+      <section className="pt-10 pb-4 px-4 sm:px-6 lg:px-8 gallery-client-hero-section">
         <div className="max-w-4xl mx-auto text-center gallery-client-hero-container">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 gallery-client-hero-title">
             机车瞬间
@@ -166,7 +166,7 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
       </section> */}
 
       {/* Gallery Grid */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 gallery-client-grid-section">
+      <section className="px-4 sm:px-6 lg:px-8 gallery-client-grid-section">
         <div className="max-w-7xl mx-auto gallery-client-grid-container">
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">

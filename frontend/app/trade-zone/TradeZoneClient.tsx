@@ -142,7 +142,6 @@ export default function TradeZoneClient({ tradeItems }: TradeZoneClientProps) {
             </div>
           ) : (
             <div className="mt-8">
-              <p className="text-gray-600 mb-4">Sign in to start selling your items</p>
               <Link
                 href="/auth/signin"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"

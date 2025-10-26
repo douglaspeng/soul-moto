@@ -20,7 +20,7 @@ export default async function ServicesPage() {
   }) as {data: Service[]}
 
   return (
-    <div className="min-h-screen pt-24 services-page">
+    <div className="min-h-screen pt-4 services-page">
       <div className="container mx-auto px-4 py-12 services-container">
         <div className="text-center mb-12 services-header">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-black mb-4 services-title">

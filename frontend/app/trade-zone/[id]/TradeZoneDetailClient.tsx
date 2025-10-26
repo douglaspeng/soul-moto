@@ -117,12 +117,12 @@ export default function TradeZoneDetailClient({ item }: TradeZoneDetailClientPro
   }
 
   // Check if current user is the owner
-  const isOwner = session?.user?.email === item.contactInfo?.email
+  const isOwner = session && session.user && session.user.email === item.contactInfo?.email
 
   return (
     <div className="min-h-screen bg-white trade-zone-detail-page">
       {/* Back Button */}
-      <section className="pt-32 pb-8 px-4 sm:px-6 lg:px-8 trade-zone-detail-back-section">
+      <section className="pt-10 pb-8 px-4 sm:px-6 lg:px-8 trade-zone-detail-back-section">
         <div className="max-w-6xl mx-auto trade-zone-detail-back-container">
           <Link
             href="/trade-zone"
@@ -234,11 +234,11 @@ export default function TradeZoneDetailClient({ item }: TradeZoneDetailClientPro
                           <span className="font-medium">Phone:</span> {item.contactInfo.phone}
                         </p>
                       )}
-                      {item.contactInfo.email && (
+                      {/* {item.contactInfo.email && (
                         <p className="text-gray-700">
                           <span className="font-medium">Email:</span> {item.contactInfo.email}
                         </p>
-                      )}
+                      )} */}
                       {item.contactInfo.location && (
                         <p className="text-gray-700">
                           <span className="font-medium">Location:</span> {item.contactInfo.location}
@@ -274,7 +274,14 @@ export default function TradeZoneDetailClient({ item }: TradeZoneDetailClientPro
                     </p>
                   </div>
                 ) : (
-                  <button className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-4 px-8 rounded-lg transition-colors duration-200 trade-zone-detail-contact-button">
+                  <button 
+                    onClick={() => {
+                      if (item.contactInfo?.email) {
+                        window.location.href = `mailto:${item.contactInfo.email}?subject=Inquiry about ${item.title}`
+                      }
+                    }}
+                    className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-4 px-8 rounded-lg transition-colors duration-200 trade-zone-detail-contact-button"
+                  >
                     Contact Seller
                   </button>
                 )}
