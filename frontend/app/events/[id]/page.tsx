@@ -75,7 +75,7 @@ export default async function EventDetail({params}: EventDetailProps) {
         return 'bg-red-100 text-red-800'
       case 'chill-ride':
         return 'bg-green-100 text-green-800'
-      case 'fast-pace-ride':
+      case 'track':
         return 'bg-purple-100 text-purple-800'
       default:
         return 'bg-gray-100 text-gray-800'
@@ -90,8 +90,8 @@ export default async function EventDetail({params}: EventDetailProps) {
         return 'Sport'
       case 'chill-ride':
         return 'Chill Ride'
-      case 'fast-pace-ride':
-        return 'Fast Pace Ride'
+      case 'track':
+        return 'Track'
       default:
         return category
     }

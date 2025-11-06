@@ -56,7 +56,7 @@ export const event = defineType({
           {title: 'Social', value: 'social'},
           {title: 'Sport', value: 'sport'},
           {title: 'Chill Ride', value: 'chill-ride'},
-          {title: 'Fast Pace Ride', value: 'fast-pace-ride'},
+          {title: 'Track', value: 'track'},
         ],
       },
       validation: (rule) => rule.required(),
@@ -105,7 +105,7 @@ export const event = defineType({
         'social': 'Social',
         'sport': 'Sport',
         'chill-ride': 'Chill Ride',
-        'fast-pace-ride': 'Fast Pace Ride',
+        'track': 'Track',
       }
       
       return {

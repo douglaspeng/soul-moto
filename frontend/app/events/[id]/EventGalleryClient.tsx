@@ -39,7 +39,7 @@ function EventGalleryClient({galleryImages}: EventGalleryClientProps) {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 event-gallery-grid">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 event-gallery-grid">
         {galleryImages.map((galleryImage) => (
           <div 
             key={galleryImage._id} 
@@ -52,7 +52,7 @@ function EventGalleryClient({galleryImages}: EventGalleryClientProps) {
                 alt={galleryImage.name || galleryImage.description || 'Event gallery image'}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300 event-gallery-image"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 16vw"
               />
             </div>
             {(galleryImage.name || galleryImage.description) && (

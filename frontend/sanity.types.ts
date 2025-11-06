@@ -119,6 +119,12 @@ export type TradeZone = {
   _rev: string
   title: string
   sellingBy: string
+  seller?: {
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    [internalGroqTypeReferenceTo]?: 'user'
+  }
   price: number
   description: string
   images: Array<{
@@ -143,6 +149,20 @@ export type TradeZone = {
     location?: string
   }
   isActive?: boolean
+}
+
+export type User = {
+  _id: string
+  _type: 'user'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name: string
+  email: string
+  image?: string
+  googleId?: string
+  isActive?: boolean
+  createdAt?: string
 }
 
 export type Service = {
@@ -212,7 +232,7 @@ export type Event = {
   detail: string
   date: string
   time: string
-  category: 'social' | 'sport' | 'chill-ride' | 'fast-pace-ride'
+  category: 'social' | 'sport' | 'chill-ride' | 'track'
   eventImage?: {
     asset?: {
       _ref: string
@@ -617,6 +637,7 @@ export type AllSanitySchemaTypes =
   | InfoSection
   | BlockContent
   | TradeZone
+  | User
   | Service
   | Gallery
   | Event
@@ -1010,7 +1031,7 @@ export type EventsQueryResult = Array<{
   detail: string
   date: string
   time: string
-  category: 'chill-ride' | 'fast-pace-ride' | 'social' | 'sport'
+  category: 'chill-ride' | 'social' | 'sport' | 'track'
   eventImage: {
     asset?: {
       _ref: string
@@ -1035,7 +1056,7 @@ export type EventQueryResult = {
   detail: string
   date: string
   time: string
-  category: 'chill-ride' | 'fast-pace-ride' | 'social' | 'sport'
+  category: 'chill-ride' | 'social' | 'sport' | 'track'
   eventImage: {
     asset?: {
       _ref: string
@@ -1131,11 +1152,14 @@ export type TradeZoneQueryResult = Array<{
     email?: string
     location?: string
   } | null
-  seller: null
+  seller: {
+    name: string
+    image: string | null
+  } | null
   _createdAt: string
 }>
 // Variable: tradeZoneItemQuery
-// Query: *[_type == "tradeZone" && _id == $id][0] {    _id,    title,    sellingBy,    price,    description,    category,    condition,    images,    "imageUrls": images[].asset->url,    contactInfo,    seller->{      name,      image    },    _createdAt  }
+// Query: *[_type == "tradeZone" && _id == $id][0] {    _id,    title,    sellingBy,    price,    description,    category,    condition,    images,    "imageUrls": images[].asset->url,    contactInfo,    seller->{      name,      image,      email    },    _createdAt  }
 export type TradeZoneItemQueryResult = {
   _id: string
   title: string
@@ -1164,7 +1188,11 @@ export type TradeZoneItemQueryResult = {
     email?: string
     location?: string
   } | null
-  seller: null
+  seller: {
+    name: string
+    image: string | null
+    email: string
+  } | null
   _createdAt: string
 } | null
 
@@ -1188,6 +1216,6 @@ declare module '@sanity/client' {
     '\n  *[_type == "service" && isActive == true] | order(_createdAt desc) {\n    _id,\n    title,\n    description,\n    detailedDescription,\n    price,\n    category,\n    serviceImage,\n    "imageUrl": serviceImage.asset->url,\n    isActive\n  }\n': ServicesQueryResult
     '\n  *[_type == "service" && _id == $id][0] {\n    _id,\n    title,\n    description,\n    detailedDescription,\n    price,\n    category,\n    serviceImage,\n    "imageUrl": serviceImage.asset->url,\n    isActive\n  }\n': ServiceQueryResult
     '\n  *[_type == "tradeZone" && isActive == true] | order(_createdAt desc) {\n    _id,\n    title,\n    sellingBy,\n    price,\n    description,\n    category,\n    condition,\n    images,\n    "imageUrls": images[].asset->url,\n    contactInfo,\n    seller->{\n      name,\n      image\n    },\n    _createdAt\n  }\n': TradeZoneQueryResult
-    '\n  *[_type == "tradeZone" && _id == $id][0] {\n    _id,\n    title,\n    sellingBy,\n    price,\n    description,\n    category,\n    condition,\n    images,\n    "imageUrls": images[].asset->url,\n    contactInfo,\n    seller->{\n      name,\n      image\n    },\n    _createdAt\n  }\n': TradeZoneItemQueryResult
+    '\n  *[_type == "tradeZone" && _id == $id][0] {\n    _id,\n    title,\n    sellingBy,\n    price,\n    description,\n    category,\n    condition,\n    images,\n    "imageUrls": images[].asset->url,\n    contactInfo,\n    seller->{\n      name,\n      image,\n      email\n    },\n    _createdAt\n  }\n': TradeZoneItemQueryResult
   }
 }

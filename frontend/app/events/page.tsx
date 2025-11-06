@@ -3,6 +3,7 @@ import {eventsQuery} from '@/sanity/lib/queries'
 import Image from 'next/image'
 import {urlForImage} from '@/sanity/lib/utils'
 import Link from 'next/link'
+import EventCalendar from '@/app/components/EventCalendar'
 
 interface Event {
   _id: string
@@ -28,6 +29,21 @@ export default async function Events() {
     return dateB.getTime() - dateA.getTime()
   }) || []
 
+  // Calculate calendar date range
+  const today = new Date()
+  const endDate = new Date(today)
+  endDate.setMonth(endDate.getMonth() + 3)
+  
+  // Find oldest event date
+  const eventDates = sortedEvents.map((event: any) => new Date(event.date))
+  const oldestEventDate = eventDates.length > 0 
+    ? new Date(Math.min(...eventDates.map(d => d.getTime())))
+    : today
+  
+  // Set calendar start to beginning of oldest event's month
+  const calendarStartDate = new Date(oldestEventDate)
+  calendarStartDate.setDate(1)
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {
@@ -46,7 +62,7 @@ export default async function Events() {
         return 'bg-red-100 text-red-800'
       case 'chill-ride':
         return 'bg-green-100 text-green-800'
-      case 'fast-pace-ride':
+      case 'track':
         return 'bg-purple-100 text-purple-800'
       default:
         return 'bg-gray-100 text-gray-800'
@@ -61,8 +77,8 @@ export default async function Events() {
         return 'Sport'
       case 'chill-ride':
         return 'Chill Ride'
-      case 'fast-pace-ride':
-        return 'Fast Pace Ride'
+      case 'track':
+        return 'Track'
       default:
         return category
     }
@@ -81,6 +97,26 @@ export default async function Events() {
           </p>
         </div>
       </section>
+
+      {/* Event Calendar */}
+      {sortedEvents && sortedEvents.length > 0 && (
+        <section className="py-8 px-4 sm:px-6 lg:px-8 events-calendar-section">
+          <div className="max-w-6xl mx-auto events-calendar-container">
+            <EventCalendar 
+              events={sortedEvents.map((event: any) => ({
+                _id: event._id,
+                eventName: event.eventName,
+                date: event.date,
+                category: event.category,
+                eventImage: event.eventImage,
+                imageUrl: event.imageUrl,
+              }))}
+              startDate={calendarStartDate}
+              endDate={endDate}
+            />
+          </div>
+        </section>
+      )}
 
       {/* Events List */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 events-list-section">
