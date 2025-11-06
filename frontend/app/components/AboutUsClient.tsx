@@ -79,23 +79,25 @@ export default function AboutUsClient({ persons }: AboutUsClientProps) {
                 {persons.map((person: any) => (
                   <div 
                     key={person._id}
-                    className="group rounded-xl p-4 pb-2 flex flex-col items-center text-center transition-all duration-500 ease-out hover:bg-white/20 hover:shadow-lg w-[120px] h-[120px] hover:w-64 hover:h-auto about-us-team-member transition-[width] duration-300"
+                    className="group rounded-xl p-4 pb-2 flex flex-col items-center text-center transition-all duration-500 ease-out hover:bg-white/20 hover:shadow-lg w-[140px] h-[140px] hover:w-64 hover:h-auto about-us-team-member transition-[width] duration-300"
                   >
                     {/* Profile Picture */}
                     <div className="flex-shrink-0 mb-2 about-us-team-member-avatar">
                       {person.picture && urlForImage(person.picture) ? (
-                        <div className="w-16 h-16 group-hover:w-20 group-hover:h-20 rounded-full overflow-hidden about-us-team-member-image transition-all duration-500 ease-out">
+                        <div className="w-[100px] h-[100px] group-hover:w-[120px] group-hover:h-[120px] rounded-full overflow-hidden about-us-team-member-image transition-all duration-500 ease-out">
                           <Image
-                            src={urlForImage(person.picture)?.url() || ''}
+                            src={urlForImage(person.picture)?.quality(100).url() || ''}
                             alt={person.picture.alt || person.name}
-                            width={48}
-                            height={48}
+                            width={100}
+                            height={100}
                             className="w-full h-full object-cover"
+                            quality={100}
+                            unoptimized
                           />
                         </div>
                       ) : (
-                        <div className="w-16 h-16 group-hover:w-20 group-hover:h-20 bg-white/20 rounded-full flex items-center justify-center about-us-team-member-placeholder transition-all duration-500 ease-out">
-                          <svg className="w-6 h-6 group-hover:w-10 group-hover:h-10 text-white transition-all duration-500 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-[100px] h-[100px] group-hover:w-[120px] group-hover:h-[120px] bg-white/20 rounded-full flex items-center justify-center about-us-team-member-placeholder transition-all duration-500 ease-out">
+                          <svg className="w-10 h-10 group-hover:w-12 group-hover:h-12 text-white transition-all duration-500 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                           </svg>
                         </div>
