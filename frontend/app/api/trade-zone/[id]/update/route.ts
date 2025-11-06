@@ -15,6 +15,30 @@ export async function PUT(
 
     const { id } = await params
 
+    // Get the trade zone item to verify ownership
+    const existingItem = await client.fetch(
+      `*[_type == "tradeZone" && _id == $id][0]{
+        _id,
+        contactInfo,
+        seller->{
+          email
+        }
+      }`,
+      { id }
+    )
+
+    if (!existingItem) {
+      return NextResponse.json({ error: 'Item not found' }, { status: 404 })
+    }
+
+    // Verify ownership - check both contactInfo email and seller email
+    const isOwnerByEmail = existingItem.contactInfo?.email === session.user.email
+    const isOwnerBySeller = existingItem.seller?.email === session.user.email
+    
+    if (!isOwnerByEmail && !isOwnerBySeller) {
+      return NextResponse.json({ error: 'Forbidden: You can only edit your own listings' }, { status: 403 })
+    }
+
     // Get form data
     const formData = await request.formData()
     const title = formData.get('title') as string
@@ -31,6 +55,12 @@ export async function PUT(
     // Validate required fields
     if (!title || !price || !description || !category || !condition) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+
+    // Ensure contactInfo.email always matches the session user's email for ownership verification
+    const contactInfoWithEmail = {
+      ...contactInfo,
+      email: session.user.email, // Always use the authenticated user's email
     }
 
     // Upload new images to Sanity
@@ -67,7 +97,7 @@ export async function PUT(
         category,
         condition,
         images: allImages,
-        contactInfo,
+        contactInfo: contactInfoWithEmail,
       })
       .commit()
 

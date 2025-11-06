@@ -218,7 +218,8 @@ export const tradeZoneItemQuery = defineQuery(`
     contactInfo,
     seller->{
       name,
-      image
+      image,
+      email
     },
     _createdAt
   }

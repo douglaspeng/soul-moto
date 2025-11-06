@@ -1,11 +1,10 @@
 import {sanityFetch} from '@/sanity/lib/live'
 import {eventQuery, galleryImagesForEventQuery} from '@/sanity/lib/queries'
-import Image from 'next/image'
-import {urlForImage} from '@/sanity/lib/utils'
 import Link from 'next/link'
 import {notFound} from 'next/navigation'
 import ShareButton from './ShareButton'
 import EventGalleryClient from './EventGalleryClient'
+import EventImageClient from './EventImageClient'
 
 interface Event {
   _id: string
@@ -121,23 +120,12 @@ export default async function EventDetail({params}: EventDetailProps) {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 event-detail-header-layout">
             {/* Event Image - Left Side */}
             <div className="lg:col-span-1 event-detail-image-container">
-              {eventData.eventImage && urlForImage(eventData.eventImage) ? (
-                <div className="relative h-80 lg:h-96 rounded-lg overflow-hidden event-detail-image-wrapper">
-                  <Image
-                    src={urlForImage(eventData.eventImage)?.url() || eventData.imageUrl || ''}
-                    alt={eventData.eventImage.alt || eventData.eventName}
-                    fill
-                    className="object-cover event-detail-image"
-                    sizes="(max-width: 1024px) 100vw, 33vw"
-                  />
-                </div>
-              ) : (
-                <div className="h-80 lg:h-96 bg-gray-200 rounded-lg flex items-center justify-center event-detail-image-placeholder">
-                  <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-              )}
+              <EventImageClient
+                eventImage={eventData.eventImage}
+                eventImageUrl={eventData.imageUrl}
+                eventName={eventData.eventName}
+                galleryImages={galleryImages}
+              />
             </div>
 
             {/* Event Info - Right Side */}

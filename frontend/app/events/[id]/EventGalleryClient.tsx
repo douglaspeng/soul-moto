@@ -3,7 +3,7 @@
 import {useState} from 'react'
 import Image from 'next/image'
 import {urlForImage} from '@/sanity/lib/utils'
-import GalleryModal from '@/app/components/GalleryModal'
+import ImageModal from '@/app/components/ImageModal'
 
 interface GalleryImage {
   _id: string
@@ -22,17 +22,19 @@ interface EventGalleryClientProps {
 }
 
 function EventGalleryClient({galleryImages}: EventGalleryClientProps) {
-  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null)
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const openModal = (galleryImage: GalleryImage) => {
-    setSelectedImage(galleryImage)
-    setIsModalOpen(true)
+    const index = galleryImages.findIndex((img) => img._id === galleryImage._id)
+    if (index !== -1) {
+      setSelectedImageIndex(index)
+      setIsModalOpen(true)
+    }
   }
 
   const closeModal = () => {
     setIsModalOpen(false)
-    setSelectedImage(null)
   }
 
   return (
@@ -73,11 +75,15 @@ function EventGalleryClient({galleryImages}: EventGalleryClientProps) {
         ))}
       </div>
 
-      {/* Reusable Gallery Modal */}
-      <GalleryModal
+      {/* Image Modal */}
+      <ImageModal
         isOpen={isModalOpen}
         onClose={closeModal}
-        selectedImage={selectedImage}
+        images={galleryImages.map((item) => item.image)}
+        imageUrls={galleryImages.map((item) => item.imageUrl || '')}
+        selectedIndex={selectedImageIndex}
+        onIndexChange={setSelectedImageIndex}
+        title="Event Gallery"
       />
     </>
   )

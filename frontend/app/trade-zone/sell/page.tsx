@@ -19,6 +19,8 @@ interface FormData {
     phone: string
     email: string
     location: string
+    city: string
+    state: string
   }
 }
 
@@ -40,7 +42,9 @@ export default function SellPage() {
     contactInfo: {
       phone: '',
       email: session?.user?.email || '',
-      location: ''
+      location: '',
+      city: '',
+      state: ''
     }
   })
   const [priceInput, setPriceInput] = useState('')
@@ -84,6 +88,16 @@ export default function SellPage() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
+    
+    // Validate file types
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg']
+    const invalidFiles = files.filter(file => !allowedTypes.includes(file.type.toLowerCase()))
+    
+    if (invalidFiles.length > 0) {
+      alert('Only PNG and JPG images are allowed. HEIC format is not supported.')
+      return
+    }
+    
     if (files.length + formData.images.length > 5) {
       alert('You can upload a maximum of 5 images')
       return
@@ -97,6 +111,31 @@ export default function SellPage() {
     // Create previews
     const newPreviews = files.map(file => URL.createObjectURL(file))
     setImagePreviews(prev => [...prev, ...newPreviews])
+  }
+
+  const formatPhoneNumber = (value: string) => {
+    // Remove all non-numeric characters
+    const numbers = value.replace(/\D/g, '')
+    
+    // Limit to 10 digits (US phone number without country code)
+    const limitedNumbers = numbers.slice(0, 10)
+    
+    // Format: (XXX) XXX-XXXX
+    if (limitedNumbers.length === 0) return ''
+    if (limitedNumbers.length <= 3) return `(${limitedNumbers}`
+    if (limitedNumbers.length <= 6) return `(${limitedNumbers.slice(0, 3)}) ${limitedNumbers.slice(3)}`
+    return `(${limitedNumbers.slice(0, 3)}) ${limitedNumbers.slice(3, 6)}-${limitedNumbers.slice(6)}`
+  }
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value)
+    setFormData(prev => ({
+      ...prev,
+      contactInfo: {
+        ...prev.contactInfo,
+        phone: formatted
+      }
+    }))
   }
 
   const removeImage = (index: number) => {
@@ -156,13 +195,24 @@ export default function SellPage() {
     
     if (name.startsWith('contactInfo.')) {
       const field = name.split('.')[1]
-      setFormData(prev => ({
-        ...prev,
-        contactInfo: {
+      setFormData(prev => {
+        const updatedContactInfo = {
           ...prev.contactInfo,
           [field]: value
         }
-      }))
+        // Combine city and state into location string
+        const location = updatedContactInfo.city && updatedContactInfo.state
+          ? `${updatedContactInfo.city}, ${updatedContactInfo.state}`
+          : updatedContactInfo.city || updatedContactInfo.state || ''
+        
+        return {
+          ...prev,
+          contactInfo: {
+            ...updatedContactInfo,
+            location
+          }
+        }
+      })
     } else if (name === 'price') {
       setPriceInput(value)
       setFormData(prev => ({
@@ -349,12 +399,12 @@ export default function SellPage() {
                     id="images"
                     name="images"
                     multiple
-                    accept="image/*"
+                    accept="image/png,image/jpeg,image/jpg"
                     onChange={handleImageChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                   <p className="text-sm text-gray-500 mt-1">
-                    Upload up to 5 images. First image will be used as the main image.
+                    Upload up to 5 images. First image will be used as the main image. Only PNG and JPG formats are allowed. HEIC format is not supported.
                   </p>
                 </div>
 
@@ -397,10 +447,14 @@ export default function SellPage() {
                       id="contactInfo.phone"
                       name="contactInfo.phone"
                       value={formData.contactInfo.phone}
-                      onChange={handleInputChange}
+                      onChange={handlePhoneChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="+1 (555) 123-4567"
+                      placeholder="(555) 123-4567"
+                      maxLength={14}
                     />
+                    <p className="text-sm text-gray-500 mt-1">
+                      Enter numbers only. Formatting will be applied automatically.
+                    </p>
                   </div>
 
                   <div>
@@ -412,26 +466,97 @@ export default function SellPage() {
                       id="contactInfo.email"
                       name="contactInfo.email"
                       value={formData.contactInfo.email}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      disabled
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
                       placeholder="your@email.com"
                     />
+                    <p className="text-sm text-gray-500 mt-1">
+                      Your email is automatically set from your account and cannot be changed.
+                    </p>
                   </div>
                 </div>
 
-                <div>
-                  <label htmlFor="contactInfo.location" className="block text-sm font-medium text-gray-700 mb-2">
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    id="contactInfo.location"
-                    name="contactInfo.location"
-                    value={formData.contactInfo.location}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="City, State"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="contactInfo.city" className="block text-sm font-medium text-gray-700 mb-2">
+                      City
+                    </label>
+                    <input
+                      type="text"
+                      id="contactInfo.city"
+                      name="contactInfo.city"
+                      value={formData.contactInfo.city}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="City"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="contactInfo.state" className="block text-sm font-medium text-gray-700 mb-2">
+                      State *
+                    </label>
+                    <select
+                      id="contactInfo.state"
+                      name="contactInfo.state"
+                      value={formData.contactInfo.state}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">Select a state</option>
+                      <option value="AL">Alabama</option>
+                      <option value="AK">Alaska</option>
+                      <option value="AZ">Arizona</option>
+                      <option value="AR">Arkansas</option>
+                      <option value="CA">California</option>
+                      <option value="CO">Colorado</option>
+                      <option value="CT">Connecticut</option>
+                      <option value="DE">Delaware</option>
+                      <option value="FL">Florida</option>
+                      <option value="GA">Georgia</option>
+                      <option value="HI">Hawaii</option>
+                      <option value="ID">Idaho</option>
+                      <option value="IL">Illinois</option>
+                      <option value="IN">Indiana</option>
+                      <option value="IA">Iowa</option>
+                      <option value="KS">Kansas</option>
+                      <option value="KY">Kentucky</option>
+                      <option value="LA">Louisiana</option>
+                      <option value="ME">Maine</option>
+                      <option value="MD">Maryland</option>
+                      <option value="MA">Massachusetts</option>
+                      <option value="MI">Michigan</option>
+                      <option value="MN">Minnesota</option>
+                      <option value="MS">Mississippi</option>
+                      <option value="MO">Missouri</option>
+                      <option value="MT">Montana</option>
+                      <option value="NE">Nebraska</option>
+                      <option value="NV">Nevada</option>
+                      <option value="NH">New Hampshire</option>
+                      <option value="NJ">New Jersey</option>
+                      <option value="NM">New Mexico</option>
+                      <option value="NY">New York</option>
+                      <option value="NC">North Carolina</option>
+                      <option value="ND">North Dakota</option>
+                      <option value="OH">Ohio</option>
+                      <option value="OK">Oklahoma</option>
+                      <option value="OR">Oregon</option>
+                      <option value="PA">Pennsylvania</option>
+                      <option value="RI">Rhode Island</option>
+                      <option value="SC">South Carolina</option>
+                      <option value="SD">South Dakota</option>
+                      <option value="TN">Tennessee</option>
+                      <option value="TX">Texas</option>
+                      <option value="UT">Utah</option>
+                      <option value="VT">Vermont</option>
+                      <option value="VA">Virginia</option>
+                      <option value="WA">Washington</option>
+                      <option value="WV">West Virginia</option>
+                      <option value="WI">Wisconsin</option>
+                      <option value="WY">Wyoming</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -466,3 +591,4 @@ export default function SellPage() {
     </div>
   )
 }
+

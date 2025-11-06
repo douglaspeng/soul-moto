@@ -53,6 +53,12 @@ export async function POST(request: NextRequest) {
       email: session.user.email
     })
 
+    // Ensure contactInfo.email always matches the session user's email for ownership verification
+    const contactInfoWithEmail = {
+      ...contactInfo,
+      email: session.user.email, // Always use the authenticated user's email
+    }
+
     // Create the trade zone item
     const tradeZoneItemData: any = {
       _type: 'tradeZone',
@@ -63,7 +69,7 @@ export async function POST(request: NextRequest) {
       category,
       condition,
       images: uploadedImages,
-      contactInfo,
+      contactInfo: contactInfoWithEmail,
       isActive: true,
     }
 

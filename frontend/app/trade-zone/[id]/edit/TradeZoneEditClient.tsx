@@ -73,12 +73,46 @@ export default function TradeZoneEditClient({ item }: TradeZoneEditClientProps) 
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const [existingImages, setExistingImages] = useState(item.images || [])
 
+  // Check if current user is the owner
+  // Check both contactInfo.email and seller email (for items created before the fix)
+  const isOwnerByEmail = session && session.user && session.user.email === item.contactInfo?.email
+  const isOwnerBySeller = session && session.user && item.seller && 
+    (item.seller as any).email === session.user.email
+  
+  const isOwner = isOwnerByEmail || isOwnerBySeller
+
+  // Auto-fix email if seller matches but email doesn't
+  useEffect(() => {
+    if (status === 'loading' || !session?.user?.email) return
+    
+    // If seller matches but email doesn't, fix it automatically
+    if (isOwnerBySeller && !isOwnerByEmail && item._id) {
+      const fixOwnership = async () => {
+        try {
+          await fetch(`/api/trade-zone/${item._id}/fix-ownership`, {
+            method: 'POST',
+          })
+          // Reload the page to get updated data
+          window.location.reload()
+        } catch (error) {
+          console.error('Failed to fix ownership:', error)
+        }
+      }
+      fixOwnership()
+    }
+  }, [status, session, isOwnerBySeller, isOwnerByEmail, item._id])
+
   useEffect(() => {
     if (status === 'loading') return
     if (!session) {
       router.push('/auth/signin')
+      return
     }
-  }, [session, status, router])
+    // Check ownership and redirect if not owner
+    if (session && !isOwner) {
+      router.push(`/trade-zone/${item._id}`)
+    }
+  }, [session, status, router, isOwner, item._id])
 
   useEffect(() => {
     if (session?.user) {
@@ -106,6 +140,31 @@ export default function TradeZoneEditClient({ item }: TradeZoneEditClientProps) 
 
   if (!session) {
     return null
+  }
+
+  // Show error if user is not the owner
+  if (!isOwner) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
+          <p className="text-gray-600 mb-6">
+            You can only edit your own listings. This listing belongs to a different user.
+          </p>
+          <button
+            onClick={() => router.push(`/trade-zone/${item._id}`)}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Go Back to Listing
+          </button>
+        </div>
+      </div>
+    )
   }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -479,10 +538,13 @@ export default function TradeZoneEditClient({ item }: TradeZoneEditClientProps) 
                       id="contactInfo.email"
                       name="contactInfo.email"
                       value={formData.contactInfo.email}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      disabled
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
                       placeholder="your@email.com"
                     />
+                    <p className="text-sm text-gray-500 mt-1">
+                      Your email is automatically set from your account and cannot be changed.
+                    </p>
                   </div>
                 </div>
 

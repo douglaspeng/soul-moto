@@ -46,6 +46,8 @@ export default function TradeZoneClient({ tradeItems }: TradeZoneClientProps) {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(price)
   }
 
@@ -251,7 +253,7 @@ export default function TradeZoneClient({ tradeItems }: TradeZoneClientProps) {
                             </svg>
                           </div>
                         )}
-                        <span className="trade-zone-item-seller">By {item.seller?.name || item.sellingBy}</span>
+                        <span className="trade-zone-item-seller">By {item.sellingBy || item.seller?.name}</span>
                       </div>
                       <span className="trade-zone-item-date">{formatDate(item._createdAt)}</span>
                     </div>

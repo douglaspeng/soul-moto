@@ -4,7 +4,7 @@ import {useEffect, useRef, useState} from 'react'
 import Image from 'next/image'
 import {urlForImage} from '@/sanity/lib/utils'
 import Shuffle from 'shufflejs'
-import GalleryModal from '@/app/components/GalleryModal'
+import ImageModal from '@/app/components/ImageModal'
 
 interface GalleryItem {
   _id: string
@@ -23,7 +23,7 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
   const [galleryItems] = useState<GalleryItem[]>(initialItems)
   const [shuffleInstance, setShuffleInstance] = useState<Shuffle | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null)
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const gridRef = useRef<HTMLDivElement>(null)
 
@@ -90,17 +90,15 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
   }
 
   const openModal = (item: GalleryItem) => {
-    setSelectedImage(item)
-    setIsModalOpen(true)
-    // Prevent body scrolling on mobile
-    document.body.style.overflow = 'hidden'
+    const index = galleryItems.findIndex((i) => i._id === item._id)
+    if (index !== -1) {
+      setSelectedImageIndex(index)
+      setIsModalOpen(true)
+    }
   }
 
   const closeModal = () => {
     setIsModalOpen(false)
-    setSelectedImage(null)
-    // Restore body scrolling
-    document.body.style.overflow = 'unset'
   }
 
   return (
@@ -284,11 +282,15 @@ export default function GalleryClient({initialItems}: GalleryClientProps) {
         </div>
       </section> */}
       
-      {/* Reusable Gallery Modal */}
-      <GalleryModal
+      {/* Image Modal */}
+      <ImageModal
         isOpen={isModalOpen}
         onClose={closeModal}
-        selectedImage={selectedImage}
+        images={galleryItems.map((item) => item.image)}
+        imageUrls={galleryItems.map((item) => item.imageUrl || '')}
+        selectedIndex={selectedImageIndex}
+        onIndexChange={setSelectedImageIndex}
+        title="Gallery"
       />
     </div>
   )

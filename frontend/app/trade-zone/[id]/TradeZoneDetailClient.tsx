@@ -6,6 +6,7 @@ import { urlForImage } from '@/sanity/lib/utils'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useRef, useEffect } from 'react'
+import ImageModal from '@/app/components/ImageModal'
 
 interface TradeZoneItem {
   _id: string
@@ -37,6 +38,10 @@ export default function TradeZoneDetailClient({ item }: TradeZoneDetailClientPro
   const { data: session } = useSession()
   const router = useRouter()
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const contactDropdownRef = useRef<HTMLDivElement>(null)
 
   // Close dropdown when clicking outside
@@ -53,10 +58,13 @@ export default function TradeZoneDetailClient({ item }: TradeZoneDetailClientPro
     }
   }, [])
 
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(price)
   }
 
@@ -134,7 +142,12 @@ export default function TradeZoneDetailClient({ item }: TradeZoneDetailClientPro
   }
 
   // Check if current user is the owner
-  const isOwner = session && session.user && session.user.email === item.contactInfo?.email
+  // Check both contactInfo.email and seller email (for items created before the fix)
+  const isOwnerByEmail = session && session.user && session.user.email === item.contactInfo?.email
+  const isOwnerBySeller = session && session.user && item.seller && 
+    (item.seller as any).email === session.user.email
+  
+  const isOwner = isOwnerByEmail || isOwnerBySeller
 
   const handleEmailContact = () => {
     if (item.contactInfo?.email) {
@@ -148,6 +161,29 @@ export default function TradeZoneDetailClient({ item }: TradeZoneDetailClientPro
       window.location.href = `sms:${item.contactInfo.phone}`
     }
     setIsContactDropdownOpen(false)
+  }
+
+  const handleDelete = async () => {
+    setIsDeleting(true)
+    try {
+      const response = await fetch(`/api/trade-zone/${item._id}/delete`, {
+        method: 'DELETE',
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to delete item')
+      }
+
+      // Redirect to trade zone list page after successful deletion
+      router.push('/trade-zone')
+    } catch (error) {
+      console.error('Error deleting item:', error)
+      alert(`Error deleting item: ${error instanceof Error ? error.message : 'Please try again.'}`)
+      setIsDeleting(false)
+      setShowDeleteConfirm(false)
+    }
   }
 
   return (
@@ -176,9 +212,12 @@ export default function TradeZoneDetailClient({ item }: TradeZoneDetailClientPro
               {item.images && item.images.length > 0 ? (
                 <div className="space-y-4 trade-zone-detail-image-gallery">
                   {/* Main Image */}
-                  <div className="relative h-96 rounded-lg overflow-hidden trade-zone-detail-main-image">
+                  <div
+                    onClick={() => setIsModalOpen(true)}
+                    className="relative h-96 rounded-lg overflow-hidden trade-zone-detail-main-image cursor-pointer hover:opacity-95 transition-opacity duration-200"
+                  >
                     <Image
-                      src={urlForImage(item.images[0])?.url() || item.imageUrls?.[0] || ''}
+                      src={urlForImage(item.images[selectedImageIndex])?.url() || item.imageUrls?.[selectedImageIndex] || ''}
                       alt={item.title}
                       fill
                       className="object-cover trade-zone-detail-main-image-content"
@@ -189,16 +228,24 @@ export default function TradeZoneDetailClient({ item }: TradeZoneDetailClientPro
                   {/* Thumbnail Images */}
                   {item.images.length > 1 && (
                     <div className="grid grid-cols-4 gap-2 trade-zone-detail-thumbnails">
-                      {item.images.slice(1, 5).map((image, index) => (
-                        <div key={index} className="relative h-20 rounded-lg overflow-hidden trade-zone-detail-thumbnail">
+                      {item.images.map((image, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setSelectedImageIndex(index)}
+                          className={`relative h-20 rounded-lg overflow-hidden trade-zone-detail-thumbnail transition-all duration-200 ${
+                            selectedImageIndex === index
+                              ? 'ring-2 ring-black ring-offset-2'
+                              : 'hover:opacity-80'
+                          }`}
+                        >
                           <Image
-                            src={urlForImage(image)?.url() || item.imageUrls?.[index + 1] || ''}
-                            alt={`${item.title} - Image ${index + 2}`}
+                            src={urlForImage(image)?.url() || item.imageUrls?.[index] || ''}
+                            alt={`${item.title} - Image ${index + 1}`}
                             fill
                             className="object-cover trade-zone-detail-thumbnail-content"
                             sizes="(max-width: 1024px) 25vw, 12.5vw"
                           />
-                        </div>
+                        </button>
                       ))}
                     </div>
                   )}
@@ -247,7 +294,7 @@ export default function TradeZoneDetailClient({ item }: TradeZoneDetailClientPro
                         className="rounded-full"
                       />
                     )}
-                    <p className="text-gray-700">{item.seller?.name || item.sellingBy}</p>
+                    <p className="text-gray-700">{item.sellingBy || item.seller?.name}</p>
                   </div>
                 </div>
 
@@ -299,6 +346,16 @@ export default function TradeZoneDetailClient({ item }: TradeZoneDetailClientPro
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
                       Edit Item
+                    </button>
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      disabled={isDeleting}
+                      className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-8 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      {isDeleting ? 'Deleting...' : 'Delete Listing'}
                     </button>
                     <p className="text-sm text-gray-500 text-center">
                       You own this item
@@ -357,6 +414,61 @@ export default function TradeZoneDetailClient({ item }: TradeZoneDetailClientPro
           </div>
         </div>
       </section>
+
+      {/* Image Modal */}
+      <ImageModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        images={item.images || []}
+        imageUrls={item.imageUrls}
+        selectedIndex={selectedImageIndex}
+        onIndexChange={setSelectedImageIndex}
+        title={item.title}
+      />
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
+          onClick={() => !isDeleting && setShowDeleteConfirm(false)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Delete Listing</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete &quot;{item.title}&quot;? This action cannot be undone.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isDeleting}
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isDeleting ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Deleting...
+                  </>
+                ) : (
+                  'Delete'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
