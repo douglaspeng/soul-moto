@@ -6,6 +6,7 @@ import {headers} from 'next/headers'
 import ShareButton from './ShareButton'
 import EventGalleryClient from './EventGalleryClient'
 import EventImageClient from './EventImageClient'
+import {getShortEventId} from '@/app/utils/shortId'
 
 interface Event {
   _id: string
@@ -43,15 +44,33 @@ export default async function EventDetail({params}: EventDetailProps) {
   const protocol = headersList.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https')
   const baseUrl = `${protocol}://${host}`
   
+  // Check if id is a short ID (8 characters or less) or full ID
+  // If it's a short ID, we need to find the matching event
+  let eventId = id
+  if (id.length <= 8) {
+    // Short ID - fetch all events and find the matching one
+    const allEventsResult = await sanityFetch({
+      query: `*[_type == "event"] { _id }`,
+    })
+    const matchingEvent = allEventsResult.data?.find((event: any) => 
+      getShortEventId(event._id) === id.toLowerCase()
+    )
+    if (matchingEvent) {
+      eventId = matchingEvent._id
+    } else {
+      notFound()
+    }
+  }
+  
   // Fetch event data and related gallery images in parallel
   const [eventResult, galleryResult] = await Promise.all([
     sanityFetch({
       query: eventQuery,
-      params: {id},
+      params: {id: eventId},
     }),
     sanityFetch({
       query: galleryImagesForEventQuery,
-      params: {eventId: id},
+      params: {eventId: eventId},
     })
   ])
 
@@ -181,7 +200,7 @@ export default async function EventDetail({params}: EventDetailProps) {
                 {/* <button className="bg-black hover:bg-gray-800 text-white font-semibold py-4 px-8 rounded-lg transition-colors duration-200">
                   Join Event
                 </button> */}
-                <ShareButton eventUrl={`${baseUrl}/events/${id}`} />
+                <ShareButton eventUrl={`${baseUrl}/events/${getShortEventId(eventData._id)}`} />
               </div>
             </div>
           </div>
