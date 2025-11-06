@@ -21,11 +21,23 @@ interface EventCalendarProps {
 }
 
 export default function EventCalendar({ events, startDate, endDate }: EventCalendarProps) {
-  // Initialize to the start date (oldest event month)
+  // Initialize to the current month
   const [currentMonth, setCurrentMonth] = useState(() => {
-    const start = new Date(startDate)
-    start.setDate(1)
-    return start
+    const today = new Date()
+    const current = new Date(today)
+    current.setDate(1)
+    // Ensure current month is within the valid range
+    if (current < startDate) {
+      const start = new Date(startDate)
+      start.setDate(1)
+      return start
+    }
+    if (current > endDate) {
+      const end = new Date(endDate)
+      end.setDate(1)
+      return end
+    }
+    return current
   })
   
   const [hoveredDate, setHoveredDate] = useState<string | null>(null)
