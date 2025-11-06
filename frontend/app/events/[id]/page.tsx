@@ -2,6 +2,7 @@ import {sanityFetch} from '@/sanity/lib/live'
 import {eventQuery, galleryImagesForEventQuery} from '@/sanity/lib/queries'
 import Link from 'next/link'
 import {notFound} from 'next/navigation'
+import {headers} from 'next/headers'
 import ShareButton from './ShareButton'
 import EventGalleryClient from './EventGalleryClient'
 import EventImageClient from './EventImageClient'
@@ -35,6 +36,12 @@ interface EventDetailProps {
 
 export default async function EventDetail({params}: EventDetailProps) {
   const {id} = await params
+  
+  // Get the current domain from headers
+  const headersList = await headers()
+  const host = headersList.get('host') || 'localhost:3000'
+  const protocol = headersList.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https')
+  const baseUrl = `${protocol}://${host}`
   
   // Fetch event data and related gallery images in parallel
   const [eventResult, galleryResult] = await Promise.all([
@@ -174,7 +181,7 @@ export default async function EventDetail({params}: EventDetailProps) {
                 {/* <button className="bg-black hover:bg-gray-800 text-white font-semibold py-4 px-8 rounded-lg transition-colors duration-200">
                   Join Event
                 </button> */}
-                <ShareButton eventUrl={`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/events/${id}`} />
+                <ShareButton eventUrl={`${baseUrl}/events/${id}`} />
               </div>
             </div>
           </div>
