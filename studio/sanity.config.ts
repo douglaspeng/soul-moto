@@ -16,6 +16,7 @@ import {
   type DocumentLocation,
 } from 'sanity/presentation'
 import {assist} from '@sanity/assist'
+import {batchUploadGalleryAction} from './src/actions/batchUploadGallery'
 
 // Environment variables for project configuration
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'your-projectID'
@@ -131,5 +132,17 @@ export default defineConfig({
   // Schema configuration, imported from ./src/schemaTypes/index.ts
   schema: {
     types: schemaTypes,
+  },
+
+  // Document actions configuration
+  document: {
+    actions: (prev, context) => {
+      // Add batch upload action for gallery documents
+      if (context.schemaType === 'gallery') {
+        console.log('Adding batch upload action for gallery documents')
+        return [...prev, batchUploadGalleryAction]
+      }
+      return prev
+    },
   },
 })

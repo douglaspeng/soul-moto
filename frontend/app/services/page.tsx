@@ -1,6 +1,8 @@
 import {servicesQuery} from '@/sanity/lib/queries'
 import {sanityFetch} from '@/sanity/lib/live'
 import Image from 'next/image'
+import Link from 'next/link'
+import {getShortEventId} from '@/app/utils/shortId'
 
 interface Service {
   _id: string
@@ -34,9 +36,10 @@ export default async function ServicesPage() {
         {services && services.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 services-grid">
             {services.map((service) => (
-              <div
+              <Link
                 key={service._id}
-                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 services-card"
+                href={`/services/${getShortEventId(service._id)}`}
+                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 services-card cursor-pointer"
               >
                 {service.serviceImage && (
                   <div className="relative h-48 w-full services-card-image-container">
@@ -75,7 +78,7 @@ export default async function ServicesPage() {
                     </p>
                   )}
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         ) : (
