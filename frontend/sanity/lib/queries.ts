@@ -10,7 +10,7 @@ const postFields = /* groq */ `
   excerpt,
   coverImage,
   "date": coalesce(date, _updatedAt),
-  "author": author->{firstName, lastName, picture},
+  "author": author->{name, picture},
 `
 
 const linkReference = /* groq */ `

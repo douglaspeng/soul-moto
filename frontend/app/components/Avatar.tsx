@@ -5,8 +5,7 @@ import DateComponent from '@/app/components/Date'
 
 type Props = {
   person: {
-    firstName: string | null
-    lastName: string | null
+    name?: string | null
     picture?: any
   }
   date?: string
@@ -14,7 +13,7 @@ type Props = {
 }
 
 export default function Avatar({person, date, small = false}: Props) {
-  const {firstName, lastName, picture} = person
+  const {name, picture} = person
 
   return (
     <div className="flex items-center font-mono">
@@ -38,9 +37,9 @@ export default function Avatar({person, date, small = false}: Props) {
         <div className="mr-1">By </div>
       )}
       <div className="flex flex-col">
-        {firstName && lastName && (
+        {name && (
           <div className={`font-bold ${small ? 'text-sm' : ''}`}>
-            {firstName} {lastName}
+            {name}
           </div>
         )}
         <div className={`text-gray-500 ${small ? 'text-xs' : 'text-sm'}`}>
