@@ -140,6 +140,15 @@ export default function Navigation() {
           
           <li className="navigation-item">
             <Link 
+              href="/posts" 
+              className={`hover:underline navigation-link ${isActive('/posts') ? 'text-black font-semibold' : ''}`}
+            >
+              Rider Blog
+            </Link>
+          </li>
+          
+          <li className="navigation-item">
+            <Link 
               href="/trade-zone" 
               className={`hover:underline navigation-link ${isActive('/trade-zone') ? 'text-black font-semibold' : ''}`}
             >
@@ -218,6 +227,16 @@ export default function Navigation() {
                       className={`block py-3 px-4 text-lg font-medium rounded-lg transition-colors ${isActive('/services') ? 'bg-gray-100 text-black' : 'text-gray-700 hover:bg-gray-100'}`}
                     >
                       Services
+                    </Link>
+                  </li>
+                  
+                  <li>
+                    <Link 
+                      href="/posts" 
+                      onClick={handleMobileLinkClick}
+                      className={`block py-3 px-4 text-lg font-medium rounded-lg transition-colors ${isActive('/posts') ? 'bg-gray-100 text-black' : 'text-gray-700 hover:bg-gray-100'}`}
+                    >
+                      Rider Blog
                     </Link>
                   </li>
                   

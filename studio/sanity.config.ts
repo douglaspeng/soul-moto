@@ -110,10 +110,6 @@ export default defineConfig({
                   title: doc?.title || 'Untitled',
                   href: resolveHref('post', doc?.slug)!,
                 },
-                {
-                  title: 'Home',
-                  href: '/',
-                } satisfies DocumentLocation,
               ].filter(Boolean) as DocumentLocation[],
             }),
           }),
