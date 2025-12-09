@@ -121,32 +121,55 @@ export default async function EventDetail({params}: EventDetailProps) {
       }
     }
   } else if (isShortId) {
-    // Short ID - fetch all events and find the matching one
-    const allEventsResult = await sanityFetch({
-      query: `*[_type == "event"] { _id }`,
-    })
+    // Short ID - first try using it directly as a Sanity ID (with possible prefixes)
+    const possibleIds = [
+      id, // Direct short ID
+      `event.${id}`, // With event prefix
+      `drafts.event.${id}`, // Draft version
+    ]
     
-    const searchIdLower = id.toLowerCase()
+    // Try all possible ID formats in parallel
+    const testResults = await Promise.all(
+      possibleIds.map(possibleId =>
+        sanityFetch({
+          query: eventQuery,
+          params: {id: possibleId},
+        }).then(result => ({id: possibleId, data: result.data}))
+      )
+    )
     
-    const matchingEvent = allEventsResult.data?.find((event: any) => {
-      const eventShortId = getShortEventId(event._id)
-      // Direct match
-      if (eventShortId === searchIdLower) {
-        return true
-      }
-      // Also check if the event ID itself starts with the short ID
-      // (in case the short ID is part of a longer ID)
-      const eventIdLower = event._id.toLowerCase()
-      if (eventIdLower.startsWith(searchIdLower) || eventIdLower.includes(searchIdLower)) {
-        return true
-      }
-      return false
-    })
-    
-    if (matchingEvent) {
-      eventId = matchingEvent._id
+    // Find the first successful match
+    const successfulMatch = testResults.find(result => result.data)
+    if (successfulMatch) {
+      eventId = successfulMatch.id
     } else {
-      notFound()
+      // If direct query didn't work, fetch all events and find the matching one
+      const allEventsResult = await sanityFetch({
+        query: `*[_type == "event"] { _id }`,
+      })
+      
+      const searchIdLower = id.toLowerCase()
+      
+      const matchingEvent = allEventsResult.data?.find((event: any) => {
+        const eventShortId = getShortEventId(event._id)
+        // Direct match
+        if (eventShortId === searchIdLower) {
+          return true
+        }
+        // Also check if the event ID itself starts with the short ID
+        // (in case the short ID is part of a longer ID)
+        const eventIdLower = event._id.toLowerCase()
+        if (eventIdLower.startsWith(searchIdLower) || eventIdLower.includes(searchIdLower)) {
+          return true
+        }
+        return false
+      })
+      
+      if (matchingEvent) {
+        eventId = matchingEvent._id
+      } else {
+        notFound()
+      }
     }
   }
   // If it's not a short ID or UUID, assume it's a full Sanity ID and use it directly
