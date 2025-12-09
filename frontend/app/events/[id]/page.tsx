@@ -45,7 +45,6 @@ export default async function EventDetail({params}: EventDetailProps) {
   const baseUrl = `${protocol}://${host}`
   
   // Check if id is a short ID (8 characters or less), UUID format, or full Sanity ID
-  // If it's a short ID or UUID, we need to find the matching event
   let eventId = id
   
   // UUID pattern: 8-4-4-4-12 format (e.g., c497b2fe-f21b-4ab7-ac81-4cf5febfea50)
@@ -53,38 +52,83 @@ export default async function EventDetail({params}: EventDetailProps) {
   const isShortId = id.length <= 8
   const isUuid = uuidPattern.test(id)
   
-  // If it's a short ID or UUID, we need to look up the full Sanity ID
-  if (isShortId || isUuid) {
-    // Fetch all events and find the matching one
-    const allEventsResult = await sanityFetch({
-      query: `*[_type == "event"] { _id }`,
-    })
+  // If it's a UUID, try using it directly as a Sanity ID first (Sanity IDs can be UUIDs)
+  // Then try looking it up if direct query fails
+  if (isUuid) {
+    // First, try using the UUID directly as the Sanity document ID
+    // Sanity document IDs can be UUIDs, so try: "event.{uuid}" or just "{uuid}"
+    const possibleIds = [
+      id, // Direct UUID
+      `event.${id}`, // With event prefix
+      `drafts.event.${id}`, // Draft version
+    ]
     
-    let matchingEvent
-    if (isUuid) {
-      // UUID format - try multiple matching strategies
+    // Try all possible ID formats in parallel
+    const testResults = await Promise.all(
+      possibleIds.map(possibleId =>
+        sanityFetch({
+          query: eventQuery,
+          params: {id: possibleId},
+        }).then(result => ({id: possibleId, data: result.data}))
+      )
+    )
+    
+    // Find the first successful match
+    const successfulMatch = testResults.find(result => result.data)
+    if (successfulMatch) {
+      eventId = successfulMatch.id
+    } else {
+      // If direct query didn't work, try looking up by matching UUID in all events
+      const allEventsResult = await sanityFetch({
+        query: `*[_type == "event"] { _id }`,
+      })
+      
       const searchIdLower = id.toLowerCase()
       const searchIdNoDashes = searchIdLower.replace(/-/g, '')
       
-      matchingEvent = allEventsResult.data?.find((event: any) => {
+      const matchingEvent = allEventsResult.data?.find((event: any) => {
         const eventIdLower = event._id.toLowerCase()
+        
         // Strategy 1: Check if the Sanity ID contains the UUID (with or without dashes)
         if (eventIdLower.includes(searchIdLower) || eventIdLower.includes(searchIdNoDashes)) {
           return true
         }
+        
         // Strategy 2: Check if the short ID matches the first 8 chars of UUID
         const shortId = getShortEventId(event._id)
         if (shortId === searchIdLower.substring(0, 8)) {
           return true
         }
+        
+        // Strategy 3: Extract UUID from Sanity ID and compare
+        const eventIdParts = eventIdLower.split('.')
+        for (const part of eventIdParts) {
+          if (part === searchIdLower || part === searchIdNoDashes) {
+            return true
+          }
+          if (part.includes(searchIdLower) || part.includes(searchIdNoDashes)) {
+            return true
+          }
+        }
+        
         return false
       })
-    } else {
-      // Short ID - find by matching short ID
-      matchingEvent = allEventsResult.data?.find((event: any) => 
-        getShortEventId(event._id) === id.toLowerCase()
-      )
+      
+      if (matchingEvent) {
+        eventId = matchingEvent._id
+      } else {
+        notFound()
+      }
     }
+  } else if (isShortId) {
+    // Short ID - fetch all events and find the matching one
+    const allEventsResult = await sanityFetch({
+      query: `*[_type == "event"] { _id }`,
+    })
+    
+    const matchingEvent = allEventsResult.data?.find((event: any) => 
+      getShortEventId(event._id) === id.toLowerCase()
+    )
     
     if (matchingEvent) {
       eventId = matchingEvent._id
