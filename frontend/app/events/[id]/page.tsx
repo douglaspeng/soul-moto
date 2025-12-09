@@ -126,9 +126,22 @@ export default async function EventDetail({params}: EventDetailProps) {
       query: `*[_type == "event"] { _id }`,
     })
     
-    const matchingEvent = allEventsResult.data?.find((event: any) => 
-      getShortEventId(event._id) === id.toLowerCase()
-    )
+    const searchIdLower = id.toLowerCase()
+    
+    const matchingEvent = allEventsResult.data?.find((event: any) => {
+      const eventShortId = getShortEventId(event._id)
+      // Direct match
+      if (eventShortId === searchIdLower) {
+        return true
+      }
+      // Also check if the event ID itself starts with the short ID
+      // (in case the short ID is part of a longer ID)
+      const eventIdLower = event._id.toLowerCase()
+      if (eventIdLower.startsWith(searchIdLower) || eventIdLower.includes(searchIdLower)) {
+        return true
+      }
+      return false
+    })
     
     if (matchingEvent) {
       eventId = matchingEvent._id
