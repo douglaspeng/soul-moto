@@ -35,6 +35,10 @@ interface EventDetailProps {
   }>
 }
 
+// Force dynamic rendering to ensure short ID lookup works correctly
+// This prevents static generation/caching that could cause 404s for short URLs
+export const dynamic = 'force-dynamic'
+
 export default async function EventDetail({params}: EventDetailProps) {
   const {id} = await params
   
