@@ -45,7 +45,10 @@ export default async function Events() {
   calendarStartDate.setDate(1)
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
+    // Parse date string as local date to avoid timezone issues
+    // Date strings from Sanity are in YYYY-MM-DD format
+    const [year, month, day] = dateString.split('-').map(Number)
+    const date = new Date(year, month - 1, day) // month is 0-indexed
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',

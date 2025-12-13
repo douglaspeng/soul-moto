@@ -47,7 +47,11 @@ export default function EventCalendar({ events, startDate, endDate }: EventCalen
   const eventsByDate = useMemo(() => {
     const grouped: Record<string, Event[]> = {}
     events.forEach((event) => {
-      const dateKey = new Date(event.date).toISOString().split('T')[0]
+      // Parse date string as local date to avoid timezone issues
+      // Date strings from Sanity are in YYYY-MM-DD format
+      const [year, month, day] = event.date.split('-').map(Number)
+      const date = new Date(year, month - 1, day) // month is 0-indexed
+      const dateKey = date.toISOString().split('T')[0]
       if (!grouped[dateKey]) {
         grouped[dateKey] = []
       }
@@ -359,11 +363,16 @@ export default function EventCalendar({ events, startDate, endDate }: EventCalen
                   <div className="flex-1 min-w-0">
                     <h4 className="font-semibold text-sm text-gray-900 truncate">{event.eventName}</h4>
                     <p className="text-xs text-gray-500 mt-0.5">
-                      {new Date(event.date).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
+                      {(() => {
+                        // Parse date string as local date to avoid timezone issues
+                        const [year, month, day] = event.date.split('-').map(Number)
+                        const date = new Date(year, month - 1, day) // month is 0-indexed
+                        return date.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })
+                      })()}
                     </p>
                   </div>
                 </div>
