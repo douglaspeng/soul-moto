@@ -156,6 +156,16 @@ export const eventQuery = defineQuery(`
   }
 `)
 
+export const eventSignupsQuery = defineQuery(`
+  *[_type == "eventSignup" && event._ref == $eventId] | order(signedUpAt desc) {
+    _id,
+    name,
+    note,
+    userImage,
+    signedUpAt
+  }
+`)
+
 export const servicesQuery = defineQuery(`
   *[_type == "service" && isActive == true] | order(_createdAt desc) {
     _id,

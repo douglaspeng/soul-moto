@@ -1,9 +1,11 @@
 import {sanityFetch} from '@/sanity/lib/live'
-import {eventQuery, galleryImagesForEventQuery} from '@/sanity/lib/queries'
+import {eventQuery, galleryImagesForEventQuery, eventSignupsQuery} from '@/sanity/lib/queries'
 import Link from 'next/link'
 import {notFound} from 'next/navigation'
 import {headers} from 'next/headers'
 import ShareButton from './ShareButton'
+import EventSignupButton from './EventSignupButton'
+import EventSignups from './EventSignups'
 import EventGalleryClient from './EventGalleryClient'
 import EventImageClient from './EventImageClient'
 import {getShortEventId} from '@/app/utils/shortId'
@@ -178,8 +180,8 @@ export default async function EventDetail({params}: EventDetailProps) {
   }
   // If it's not a short ID or UUID, assume it's a full Sanity ID and use it directly
   
-  // Fetch event data and related gallery images in parallel
-  const [eventResult, galleryResult] = await Promise.all([
+  // Fetch event data, related gallery images, and signups in parallel
+  const [eventResult, galleryResult, signupsResult] = await Promise.all([
     sanityFetch({
       query: eventQuery,
       params: {id: eventId},
@@ -187,11 +189,16 @@ export default async function EventDetail({params}: EventDetailProps) {
     sanityFetch({
       query: galleryImagesForEventQuery,
       params: {eventId: eventId},
+    }),
+    sanityFetch({
+      query: eventSignupsQuery,
+      params: {eventId: eventId},
     })
   ])
 
   const event = eventResult.data
   const galleryImages = galleryResult.data as GalleryImage[]
+  const signups = signupsResult.data || []
 
   if (!event) {
     notFound()
@@ -313,9 +320,7 @@ export default async function EventDetail({params}: EventDetailProps) {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 event-detail-actions">
-                {/* <button className="bg-black hover:bg-gray-800 text-white font-semibold py-4 px-8 rounded-lg transition-colors duration-200">
-                  Join Event
-                </button> */}
+                <EventSignupButton eventId={eventData._id} />
                 <ShareButton eventUrl={`${baseUrl}/events/${getShortEventId(eventData._id)}`} />
               </div>
             </div>
@@ -352,6 +357,9 @@ export default async function EventDetail({params}: EventDetailProps) {
       )}
 
       {/* Related Events or Call to Action, we don't need this for now */}
+      {/* Event Signups Section */}
+      <EventSignups signups={signups} />
+
       {/* <section className="py-16 px-4 sm:px-6 lg:px-8 event-detail-cta-section">
         <div className="max-w-4xl mx-auto text-center event-detail-cta-container">
           <h2 className="text-3xl font-bold text-gray-900 mb-4 event-detail-cta-title">

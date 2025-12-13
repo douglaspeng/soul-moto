@@ -17,6 +17,7 @@ import {
 } from 'sanity/presentation'
 import {assist} from '@sanity/assist'
 import {batchUploadGalleryAction} from './src/actions/batchUploadGallery'
+import {deleteEventSignupAction} from './src/actions/deleteEventSignup'
 
 // Environment variables for project configuration
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'your-projectID'
@@ -137,6 +138,10 @@ export default defineConfig({
       if (context.schemaType === 'gallery') {
         console.log('Adding batch upload action for gallery documents')
         return [...prev, batchUploadGalleryAction]
+      }
+      // Add delete action for event signups
+      if (context.schemaType === 'eventSignup') {
+        return [...prev, deleteEventSignupAction]
       }
       return prev
     },
