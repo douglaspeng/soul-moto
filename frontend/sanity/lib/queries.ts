@@ -162,7 +162,9 @@ export const eventSignupsQuery = defineQuery(`
     name,
     note,
     userImage,
-    signedUpAt
+    signedUpAt,
+    "userId": user._ref,
+    "userEmail": user->email
   }
 `)
 

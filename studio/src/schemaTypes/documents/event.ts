@@ -1,5 +1,6 @@
 import {CalendarIcon} from '@sanity/icons'
 import {defineField, defineType} from 'sanity'
+import {EventSignupsField} from '../../components/EventSignupsField'
 
 /**
  * Event schema. Define and edit the fields for the 'event' content type.
@@ -88,6 +89,16 @@ export const event = defineType({
         aiAssist: {
           imageDescriptionField: 'alt',
         },
+      },
+    }),
+    defineField({
+      name: 'signups',
+      title: 'Event Signups',
+      type: 'string',
+      readOnly: true,
+      initialValue: 'signups-display',
+      components: {
+        input: EventSignupsField as any,
       },
     }),
   ],

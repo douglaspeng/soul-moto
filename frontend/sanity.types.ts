@@ -1069,6 +1069,9 @@ export type EventQueryResult = {
   } | null
   imageUrl: string | null
 } | null
+// Variable: eventSignupsQuery
+// Query: *[_type == "eventSignup" && event._ref == $eventId] | order(signedUpAt desc) {    _id,    name,    note,    userImage,    signedUpAt,    "userId": user._ref,    "userEmail": user->email  }
+export type EventSignupsQueryResult = Array<never>
 // Variable: servicesQuery
 // Query: *[_type == "service" && isActive == true] | order(_createdAt desc) {    _id,    title,    description,    detailedDescription,    price,    category,    serviceImage,    "imageUrl": serviceImage.asset->url,    isActive  }
 export type ServicesQueryResult = Array<{
@@ -1210,6 +1213,7 @@ declare module '@sanity/client' {
     '\n  *[_type == "gallery" && relatedEvent._ref == $eventId] | order(_createdAt desc) {\n    _id,\n    name,\n    description,\n    image,\n    "imageUrl": image.asset->url,\n    relatedEvent\n  }\n': GalleryImagesForEventQueryResult
     '\n  *[_type == "event"] | order(date desc, _createdAt desc) {\n    _id,\n    eventName,\n    description,\n    detail,\n    date,\n    time,\n    category,\n    eventImage,\n    "imageUrl": eventImage.asset->url\n  }\n': EventsQueryResult
     '\n  *[_type == "event" && _id == $id][0] {\n    _id,\n    eventName,\n    description,\n    detail,\n    date,\n    time,\n    category,\n    eventImage,\n    "imageUrl": eventImage.asset->url\n  }\n': EventQueryResult
+    '\n  *[_type == "eventSignup" && event._ref == $eventId] | order(signedUpAt desc) {\n    _id,\n    name,\n    note,\n    userImage,\n    signedUpAt,\n    "userId": user._ref,\n    "userEmail": user->email\n  }\n': EventSignupsQueryResult
     '\n  *[_type == "service" && isActive == true] | order(_createdAt desc) {\n    _id,\n    title,\n    description,\n    detailedDescription,\n    price,\n    category,\n    serviceImage,\n    "imageUrl": serviceImage.asset->url,\n    isActive\n  }\n': ServicesQueryResult
     '\n  *[_type == "service" && _id == $id][0] {\n    _id,\n    title,\n    description,\n    detailedDescription,\n    price,\n    category,\n    serviceImage,\n    "imageUrl": serviceImage.asset->url,\n    isActive\n  }\n': ServiceQueryResult
     '\n  *[_type == "tradeZone" && isActive == true] | order(_createdAt desc) {\n    _id,\n    title,\n    sellingBy,\n    price,\n    description,\n    category,\n    condition,\n    images,\n    "imageUrls": images[].asset->url,\n    contactInfo,\n    seller->{\n      name,\n      image\n    },\n    _createdAt\n  }\n': TradeZoneQueryResult
