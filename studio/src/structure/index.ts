@@ -9,14 +9,14 @@ import {BatchUploadGallery} from '../components/BatchUploadGallery'
  * Learn more: https://www.sanity.io/docs/structure-builder-introduction
  */
 
-const DISABLED_TYPES = ['settings', 'assist.instruction.context']
+const DISABLED_TYPES = ['settings', 'assist.instruction.context', 'eventSignup']
 
 export const structure: StructureResolver = (S: StructureBuilder) =>
   S.list()
     .title('Website Content')
     .items([
       ...S.documentTypeListItems()
-        // Remove the "assist.instruction.context" and "settings" content  from the list of content types
+        // Remove the "assist.instruction.context", "settings", and "eventSignup" from the list
         .filter((listItem: any) => !DISABLED_TYPES.includes(listItem.getId()))
         // Pluralize the title of each document type.  This is not required but just an option to consider.
         .map((listItem) => {
@@ -25,6 +25,39 @@ export const structure: StructureResolver = (S: StructureBuilder) =>
           // Keep galleries list as normal
           if (id === 'gallery') {
             return listItem.title(pluralize(listItem.getTitle() as string))
+          }
+          
+          // For events, add signups as children
+          if (id === 'event') {
+            return listItem
+              .title(pluralize(listItem.getTitle() as string))
+              .child((eventId) => {
+                if (!eventId) {
+                  return S.documentTypeList('event')
+                }
+                return S.list()
+                  .title('Event')
+                  .items([
+                    // Event document
+                    S.listItem()
+                      .title('Event Details')
+                      .child(
+                        S.document()
+                          .schemaType('event')
+                          .documentId(eventId)
+                      ),
+                    // Signups for this event
+                    S.listItem()
+                      .title('Signups')
+                      .child(
+                        S.documentList()
+                          .title('Event Signups')
+                          .filter('_type == "eventSignup" && event._ref == $eventId')
+                          .params({eventId})
+                          .defaultOrdering([{field: 'signedUpAt', direction: 'desc'}])
+                      ),
+                  ])
+              })
           }
           
           return listItem.title(pluralize(listItem.getTitle() as string))
