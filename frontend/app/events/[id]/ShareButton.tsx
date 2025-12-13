@@ -40,7 +40,7 @@ export default function ShareButton({ eventUrl }: ShareButtonProps) {
       onClick={handleShare}
       className="border border-gray-300 hover:border-gray-400 text-gray-700 hover:text-gray-900 font-semibold py-4 px-8 rounded-lg transition-colors duration-200 cursor-pointer share-button"
     >
-      {copied ? 'Copied!' : 'Share Event'}
+      {copied ? '已复制!' : '分享活动'}
     </button>
   )
 }
