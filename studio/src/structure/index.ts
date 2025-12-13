@@ -27,37 +27,9 @@ export const structure: StructureResolver = (S: StructureBuilder) =>
             return listItem.title(pluralize(listItem.getTitle() as string))
           }
           
-          // For events, add signups as children
+          // Keep events as normal list for now
           if (id === 'event') {
-            return listItem
-              .title(pluralize(listItem.getTitle() as string))
-              .child((eventId) => {
-                if (!eventId) {
-                  return S.documentTypeList('event')
-                }
-                return S.list()
-                  .title('Event')
-                  .items([
-                    // Event document
-                    S.listItem()
-                      .title('Event Details')
-                      .child(
-                        S.document()
-                          .schemaType('event')
-                          .documentId(eventId)
-                      ),
-                    // Signups for this event
-                    S.listItem()
-                      .title('Signups')
-                      .child(
-                        S.documentList()
-                          .title('Event Signups')
-                          .filter('_type == "eventSignup" && event._ref == $eventId')
-                          .params({eventId})
-                          .defaultOrdering([{field: 'signedUpAt', direction: 'desc'}])
-                      ),
-                  ])
-              })
+            return listItem.title(pluralize(listItem.getTitle() as string))
           }
           
           return listItem.title(pluralize(listItem.getTitle() as string))
