@@ -156,6 +156,14 @@ export default function Navigation() {
             </Link>
           </li>
           <li className="navigation-item">
+            <Link 
+              href="/gear" 
+              className={`hover:underline navigation-link ${isActive('/gear') ? 'text-black font-semibold' : ''}`}
+            >
+              Gear
+            </Link>
+          </li>
+          <li className="navigation-item">
             <button 
               onClick={handleAboutUsClick}
               className={`hover:underline navigation-link ${isAboutUsActive ? 'text-black font-semibold' : ''}`}
@@ -247,6 +255,16 @@ export default function Navigation() {
                       className={`block py-3 px-4 text-lg font-medium rounded-lg transition-colors ${isActive('/trade-zone') ? 'bg-gray-100 text-black' : 'text-gray-700 hover:bg-gray-100'}`}
                     >
                       Trade Zone
+                    </Link>
+                  </li>
+                  
+                  <li>
+                    <Link 
+                      href="/gear" 
+                      onClick={handleMobileLinkClick}
+                      className={`block py-3 px-4 text-lg font-medium rounded-lg transition-colors ${isActive('/gear') ? 'bg-gray-100 text-black' : 'text-gray-700 hover:bg-gray-100'}`}
+                    >
+                      Gear
                     </Link>
                   </li>
                   

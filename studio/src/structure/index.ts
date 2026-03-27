@@ -1,7 +1,8 @@
-import {CogIcon, UploadIcon} from '@sanity/icons'
+import {CogIcon, UploadIcon, TagIcon} from '@sanity/icons'
 import type {StructureBuilder, StructureResolver} from 'sanity/structure'
 import pluralize from 'pluralize-esm'
 import {BatchUploadGallery} from '../components/BatchUploadGallery'
+import {GearOrdersTable} from '../components/GearOrdersTable'
 
 /**
  * Structure builder is useful whenever you want to control how documents are grouped and
@@ -9,7 +10,7 @@ import {BatchUploadGallery} from '../components/BatchUploadGallery'
  * Learn more: https://www.sanity.io/docs/structure-builder-introduction
  */
 
-const DISABLED_TYPES = ['settings', 'assist.instruction.context', 'eventSignup']
+const DISABLED_TYPES = ['settings', 'assist.instruction.context', 'eventSignup', 'gearOrder']
 
 export const structure: StructureResolver = (S: StructureBuilder) =>
   S.list()
@@ -39,6 +40,11 @@ export const structure: StructureResolver = (S: StructureBuilder) =>
         .title('Batch Upload Images')
         .icon(UploadIcon)
         .child(S.component(BatchUploadGallery).title('Batch Upload Images')),
+      // Gear Orders table — admin view with received checkbox
+      S.listItem()
+        .title('Gear Orders')
+        .icon(TagIcon)
+        .child(S.component(GearOrdersTable).title('Gear Orders')),
       // Settings Singleton in order to view/edit the one particular document for Settings.  Learn more about Singletons: https://www.sanity.io/docs/create-a-link-to-a-single-edit-page-in-your-main-document-type-list
       S.listItem()
         .title('Site Settings')

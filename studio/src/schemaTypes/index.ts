@@ -7,6 +7,7 @@ import {service} from './documents/service'
 import {tradeZone} from './documents/tradeZone'
 import {user} from './documents/user'
 import {eventSignup} from './documents/eventSignup'
+import {gearOrder} from './documents/gearOrder'
 import {callToAction} from './objects/callToAction'
 import {infoSection} from './objects/infoSection'
 import {settings} from './singletons/settings'
@@ -28,6 +29,7 @@ export const schemaTypes = [
   tradeZone,
   user,
   eventSignup,
+  gearOrder,
   // Objects
   blockContent,
   infoSection,
