@@ -9,9 +9,10 @@ import ImageModal from '@/app/components/ImageModal'
 const SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL']
 const COLORS = ['White', 'Black']
 
-const GEAR_CONFIG: Record<string, {label: string; images: string[]}> = {
+const GEAR_CONFIG: Record<string, {label: string; price: number; images: string[]}> = {
   hoodie: {
     label: '连帽卫衣',
+    price: 45,
     images: [
       '/images/gears/11.JPG',
       '/images/gears/3.JPG',
@@ -21,6 +22,7 @@ const GEAR_CONFIG: Record<string, {label: string; images: string[]}> = {
   },
   tshirt: {
     label: 'T-Shirt',
+    price: 25,
     images: [
       '/images/gears/1.JPG',
       '/images/gears/9.JPG',
@@ -191,6 +193,7 @@ export default function GearOrderClient({clothType}: GearOrderClientProps) {
                 Soul Moto Crew Official
               </p>
               <h1 className="text-3xl font-bold text-gray-900">Soul Moto {config.label}</h1>
+              <p className="text-2xl font-semibold text-gray-800 mt-2">${config.price}</p>
             </div>
 
             {success ? (
@@ -296,35 +299,67 @@ export default function GearOrderClient({clothType}: GearOrderClientProps) {
                       </svg>
                     </summary>
                     <div className="mt-3 overflow-x-auto">
-                      <table className="w-full text-sm text-center border-collapse">
-                        <thead>
-                          <tr className="bg-gray-100 text-gray-500">
-                            {['尺码', '衣长', '胸围', '肩宽', '袖长'].map((h) => (
-                              <th key={h} className="px-3 py-2 font-medium">{h}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody className="text-gray-700">
-                          {[
-                            ['S',   '68', '104', '51', '22'],
-                            ['M',   '70', '108', '53', '22.5'],
-                            ['L',   '72', '112', '55', '23'],
-                            ['XL',  '74', '116', '57', '23.5'],
-                            ['2XL', '76', '120', '59', '24'],
-                            ['3XL', '78', '124', '61', '24.5'],
-                          ].map(([size, ...vals]) => (
-                            <tr
-                              key={size}
-                              className={`border-t border-gray-100 ${selectedSize === size ? 'bg-black text-white font-semibold' : 'hover:bg-gray-50'}`}
-                            >
-                              <td className="px-3 py-2">{size}</td>
-                              {vals.map((v, i) => (
-                                <td key={i} className="px-3 py-2">{v}</td>
+                      {clothType === 'hoodie' ? (
+                        <table className="w-full text-sm text-center border-collapse">
+                          <thead>
+                            <tr className="bg-gray-900 text-white rounded-lg">
+                              {['尺码', '胸围', '肩宽', '袖长', '衣长', '体重(斤)'].map((h) => (
+                                <th key={h} className="px-3 py-2 font-medium">{h}</th>
                               ))}
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody className="text-gray-700">
+                            {[
+                              ['S',   '96',  '50', '52', '65', '100以内'],
+                              ['M',   '102', '53', '53', '67', '100-120'],
+                              ['L',   '108', '56', '54', '69', '120-140'],
+                              ['XL',  '114', '59', '55', '71', '140-160'],
+                              ['2XL', '120', '62', '56', '73', '160-180'],
+                              ['3XL', '126', '65', '57', '75', '180-200'],
+                            ].map(([size, ...vals]) => (
+                              <tr
+                                key={size}
+                                className={`border-t border-gray-100 ${selectedSize === size ? 'bg-black text-white font-semibold' : 'hover:bg-gray-50'}`}
+                              >
+                                <td className="px-3 py-2">{size}</td>
+                                {vals.map((v, i) => (
+                                  <td key={i} className="px-3 py-2">{v}</td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <table className="w-full text-sm text-center border-collapse">
+                          <thead>
+                            <tr className="bg-gray-100 text-gray-500">
+                              {['尺码', '衣长', '胸围', '肩宽', '袖长'].map((h) => (
+                                <th key={h} className="px-3 py-2 font-medium">{h}</th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody className="text-gray-700">
+                            {[
+                              ['S',   '68', '104', '51', '22'],
+                              ['M',   '70', '108', '53', '22.5'],
+                              ['L',   '72', '112', '55', '23'],
+                              ['XL',  '74', '116', '57', '23.5'],
+                              ['2XL', '76', '120', '59', '24'],
+                              ['3XL', '78', '124', '61', '24.5'],
+                            ].map(([size, ...vals]) => (
+                              <tr
+                                key={size}
+                                className={`border-t border-gray-100 ${selectedSize === size ? 'bg-black text-white font-semibold' : 'hover:bg-gray-50'}`}
+                              >
+                                <td className="px-3 py-2">{size}</td>
+                                {vals.map((v, i) => (
+                                  <td key={i} className="px-3 py-2">{v}</td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
                       <p className="text-xs text-gray-400 mt-2">单位 cm</p>
                     </div>
                   </details>
